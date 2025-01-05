@@ -86,9 +86,9 @@ body {
 }
 
 @layer base {
-  * {
+  /* * {
     border-color: hsl(var(--border)); /* Explicitly applying border color */
-  }
+  /* } */ */
   body {
     @apply bg-background text-foreground;
   }
