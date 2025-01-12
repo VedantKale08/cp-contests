@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import { setCookie } from "cookies-next";
 
 export default function RegistrationForm() {
   const [teamName, setTeamName] = useState("");
@@ -12,8 +13,10 @@ export default function RegistrationForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setCookie("hackerRankId",hackerRankId);
+    setCookie("teamName", teamName);
     // You can add validation here if needed
-    router.push(`/dashboard/${hackerRankId}`);
+    router.push(`/graph-contest/${hackerRankId}`);
   };
 
   return (

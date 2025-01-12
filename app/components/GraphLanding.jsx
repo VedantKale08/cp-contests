@@ -5,13 +5,24 @@ import EventDetails from "./EventDetails";
 import Prizes from "./Prizes";
 import RegistrationForm from "./RegistrationForm";
 import Footer from "./Footer";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-const GraphLanding = () => {
+const isRegistered = async () => {
+    const cookieStore = await cookies();
+    const hackerRankId = cookieStore.get("hackerRankId");    
+    if (hackerRankId) {
+      redirect(`/graph-contest/${hackerRankId.value}`);
+    }
+}
+
+const GraphLanding = async () => {
+  await isRegistered();
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Header />
       <main className="flex-grow">
-        <section className=" text-slate-800 py-20 px-4">
+        <section className=" text-slate-800 py-24 px-4 ">
           <div className="container mx-auto text-center">
             <h1 className="text-5xl font-bold mb-4">Graph-Based Contest</h1>
             <p className="text-xl mb-8">
