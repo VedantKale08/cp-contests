@@ -3,11 +3,18 @@ import React, { useEffect, useState } from "react";
 import Header from "../Header";
 import Sidebar from "./Sidebar";
 import dynamic from "next/dynamic";
+import ConfirmationPopup from "./ConfirmationPopup";
 
 // Dynamically import Graph with ssr: false to disable server-side rendering
 const Graph = dynamic(() => import("react-vis-network-graph"), { ssr: false });
 
 function Main({ id, initialGraph }) {
+  const routes = [
+    [1, 2, 5, 8, 10, 13],
+    [1, 3, 6, 9, 11, 12, 13],
+    [1, 4, 7, 11, 12, 13],
+  ];
+
   const [graph, setGraph] = useState(() => {
     const savedGraph = localStorage.getItem("graphState");
     return savedGraph ? JSON.parse(savedGraph) : initialGraph;
@@ -17,6 +24,14 @@ function Main({ id, initialGraph }) {
     const savedUnlockedNodes = localStorage.getItem("unlockedNodes");
     return savedUnlockedNodes ? JSON.parse(savedUnlockedNodes) : [1];
   });
+
+  const [solvedNodes, setSolvedNodes] = useState(() => {
+    const savedSolvedNodes = localStorage.getItem("solvedNodes");
+    return savedSolvedNodes ? JSON.parse(savedSolvedNodes) : [];
+  });
+
+  const [longestRoute, setLongestRoute] = useState([]);
+  const [popUp, setPopup] = useState(false);
 
   const options = {
     physics: false,
@@ -45,13 +60,14 @@ function Main({ id, initialGraph }) {
       zoomView: false,
       dragView: false,
       dragNodes: false,
-      selectable: false,
+      selectable: true,
     },
   };
 
   const events = {
     click: (event) => {
       const { nodes } = event;
+      console.log(event);
       if (nodes.length > 0) {
         const clickedNodeId = nodes[0];
         handleNodeClick(clickedNodeId);
@@ -60,8 +76,7 @@ function Main({ id, initialGraph }) {
   };
 
   const handleNodeClick = (nodeId) => {
-    const clickedNode = graph.nodes.find((node) => node.id === nodeId);
-
+    const clickedNode = graph.nodes.find((node) => node.id === nodeId);    
     if (unlockedNodes.includes(nodeId)) {
       window.open(clickedNode.contestLink, "_blank");
     } else {
@@ -70,6 +85,13 @@ function Main({ id, initialGraph }) {
   };
 
   const unlockNeighbors = (nodeId) => {
+    setSolvedNodes((prev) => {
+      const updatedSolvedNodes = [...prev, nodeId];
+      localStorage.setItem("solvedNodes", JSON.stringify(updatedSolvedNodes));
+      updateLongestRoute(updatedSolvedNodes);
+      return updatedSolvedNodes;
+    });
+
     const neighbors = graph.edges
       .filter((edge) => edge.from === nodeId)
       .map((edge) => edge.to);
@@ -100,13 +122,38 @@ function Main({ id, initialGraph }) {
     });
   };
 
+  const updateLongestRoute = (solved) => {
+    let maxRoute = [];
+
+    routes.forEach((route) => {
+      let currentRoute = [];
+      for (let node of route) {
+        if (solved.includes(node)) {
+          currentRoute.push(node);
+        } else {
+          break;
+        }
+      }
+
+      if (currentRoute.length > maxRoute.length) {
+        maxRoute = currentRoute;
+      }
+    });
+
+    setLongestRoute(maxRoute);
+  };
+
+  useEffect(() => {
+    updateLongestRoute(solvedNodes);
+  }, [solvedNodes]);
+
   useEffect(() => {
     localStorage.setItem("graphState", JSON.stringify(graph));
   }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      <Header isContestPage={true}/>
+      <Header isContestPage={true} setPopup={setPopup} />
       <main className="flex gap-3">
         <div className="flex-grow container mx-auto px-4 py-8">
           <h1 className="text-4xl font-bold text-center text-black mb-2">
@@ -130,6 +177,7 @@ function Main({ id, initialGraph }) {
           unlockNeighbors={unlockNeighbors}
           unlockedNodes={unlockedNodes}
         />
+        {popUp && <ConfirmationPopup setPopup={setPopup} solvedNodes={solvedNodes} longestRoute={longestRoute}/>}
       </main>
     </div>
   );

@@ -1,7 +1,36 @@
-import React from 'react'
-import PopupContainer from '../PopupContainer'
+import React from "react";
+import PopupContainer from "../PopupContainer";
+import toast from "react-hot-toast";
+import { addDoc, collection } from "firebase/firestore";
+import { firestore } from "@/firebase/firebase";
+import { deleteCookie, getCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
 
-function ConfirmationPopup({setPopup}) {
+function ConfirmationPopup({ setPopup, solvedNodes, longestRoute }) {
+  const ref = collection(firestore, "submissions");
+  const router = useRouter();
+  
+  const handleSubmit = () => {
+    try {
+      let data = {
+        team_name: getCookie("teamName"),
+        hackerrank_username: getCookie("hackerRankId"),
+        solved_questions: solvedNodes,
+        route: longestRoute,
+        score: solvedNodes?.length ?? 0,
+      };
+
+      addDoc(ref, data);
+      deleteCookie("hackerRankId");
+      deleteCookie("teamName");
+      localStorage.clear();
+      router.push("/");
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong!");
+    }
+  };
+
   return (
     <PopupContainer closeBtn={true} setPopup={setPopup}>
       <div className="bg-white px-6 py-4 pb-6 rounded-md text-black flex flex-col gap-4">
@@ -15,7 +44,10 @@ function ConfirmationPopup({setPopup}) {
           recovered after submission.
         </p>
 
-        <button className="bg-green-700 w-full py-2 rounded-md text-white">
+        <button
+          onClick={handleSubmit}
+          className="bg-green-700 w-full py-2 rounded-md text-white"
+        >
           Submit
         </button>
       </div>
@@ -23,4 +55,4 @@ function ConfirmationPopup({setPopup}) {
   );
 }
 
-export default ConfirmationPopup
+export default ConfirmationPopup;

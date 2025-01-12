@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import SubmitButton from "./Graph contest/SubmitButton";
 
-export default function Header({ isContestPage = false }) {
+export default function Header({ isContestPage = false, setPopup = void 0 }) {
   return (
     <header className=" bg-[#0e1111] text-white p-4 shadow-xl px-20">
       <div className="container mx-auto flex justify-between items-center">
@@ -36,7 +36,7 @@ export default function Header({ isContestPage = false }) {
               </li>
             </ul>
           ) : (
-            <SubmitButton/>
+            <SubmitButton setPopup={setPopup} />
           )}
         </nav>
       </div>

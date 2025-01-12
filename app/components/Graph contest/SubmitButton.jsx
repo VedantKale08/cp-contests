@@ -2,19 +2,17 @@
 import React, { useState } from "react";
 import ConfirmationPopup from "./ConfirmationPopup";
 
-function SubmitButton() {
-    const [popUp,setPopup] = useState(false);
-
+function SubmitButton({ setPopup }) {
+    let solved = localStorage.getItem("solvedNodes");
   return (
     <div className="flex gap-3">
-      <div className="bg-gray-700 px-3 py-1 rounded-full">Solved : 13</div>
+      <div className="bg-gray-700 px-3 py-1 rounded-full">Solved : {solved?.length ?? 0}</div>
       <button
         onClick={() => setPopup(true)}
         className="bg-green-700 px-3 py-1 rounded-full hover:opacity-80"
       >
         Submit
       </button>
-      {popUp && <ConfirmationPopup setPopup={setPopup} />}
     </div>
   );
 }
