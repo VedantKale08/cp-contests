@@ -7,9 +7,17 @@ import {
   PENALTIES,
   REWARDS,
   GRID_SIZE
-} from '../../../constansts'
+} from '../../../constansts';
 import { createEmptyGrid, createInitialVisitedCells } from './gridUtils';
 import { placePits, placeWumpus, addBreezeAndStench } from './entityPlacer';
+import { doc, updateDoc } from "firebase/firestore";
+import { firestore } from '@/firebase/firebase';
+
+const calculateEuclideanDistance = (playerPosition, goalPosition) => {
+  const dx = playerPosition.x - goalPosition.x;
+  const dy = playerPosition.y - goalPosition.y;
+  return Math.sqrt(dx * dx + dy * dy);
+};
 
 const encode = (data) => {
   return btoa(JSON.stringify(data)); 
@@ -19,19 +27,6 @@ const decode = (encodedData) => {
   return JSON.parse(atob(encodedData)); 
 };
 
-const fetchRemainingSteps = async () => {
-  const id = await params.id;
-  try {
-    const response = await fetch('/api/wumpus-world/remaining-steps');
-    const data = await response.json();
-    return data.remainingSteps || DEFAULT_STEPS;
-  } catch (error) {
-    console.error('Error fetching remaining steps:', error);
-    return DEFAULT_STEPS; 
-  }
-};
-
-
 export const useGameStore = create((set, get) => ({
   grid: [],
   playerPosition: INITIAL_POSITION,
@@ -40,7 +35,7 @@ export const useGameStore = create((set, get) => ({
   gameOver: false,
   visitedCells: [],
   isLoaded: false,
-  remainingSteps: 0,
+  remainingSteps: DEFAULT_STEPS,
 
   setStepLimit: (limit) => {
     set({ remainingSteps: limit });
@@ -61,7 +56,7 @@ export const useGameStore = create((set, get) => ({
       newGrid[GOAL_POSITION.y][GOAL_POSITION.x] = ['goal'];
       addBreezeAndStench(newGrid);
 
-      const remainingSteps = await fetchRemainingSteps();
+      const remainingSteps = DEFAULT_STEPS;
 
       const initialState = {
         grid: newGrid,
@@ -89,11 +84,12 @@ export const useGameStore = create((set, get) => ({
     localStorage.setItem('wumpusWorldState', encode(get())); 
   },
 
-  movePlayer: (direction) => {
-    set(prev => {
+  movePlayer: async (direction) => {
+    set((prev) => {
       if (prev.gameOver) return prev;
 
       const newPosition = { ...prev.playerPosition };
+
       switch (direction) {
         case 'up':
           if (newPosition.y > 0) newPosition.y--;
@@ -109,8 +105,7 @@ export const useGameStore = create((set, get) => ({
           break;
       }
 
-      if (newPosition.x === prev.playerPosition.x && 
-          newPosition.y === prev.playerPosition.y) {
+      if (newPosition.x === prev.playerPosition.x && newPosition.y === prev.playerPosition.y) {
         return prev;
       }
 
@@ -141,6 +136,9 @@ export const useGameStore = create((set, get) => ({
         gameOver = true;
       }
 
+      const euclideanDistance = ((1 - calculateEuclideanDistance(newPosition, GOAL_POSITION) / 10) * 100).toFixed(2);
+      newScore = Math.max(newScore, euclideanDistance);
+
       const newState = {
         ...prev,
         playerPosition: newPosition,
@@ -148,11 +146,23 @@ export const useGameStore = create((set, get) => ({
         score: newScore,
         penalties: newPenalties,
         gameOver,
-        remainingSteps: newRemainingSteps
+        remainingSteps: newRemainingSteps,
       };
-
       localStorage.setItem('wumpusWorldState', encode(newState)); 
       return newState;
     });
+    const temp = await cookieStore.get("hackerRankId");
+    const hackerRankId = temp.value;
+    const userDocRef = doc(firestore, "users", hackerRankId);
+    try {
+      const newState = get();
+      await updateDoc(userDocRef, {
+        score: newState.score,
+        penalties: newState.penalties,
+      });
+      console.log("Score updated in Firestore");
+    } catch (error) {
+      console.error("Error updating score in Firestore:", error);
+    }
   }
 }));

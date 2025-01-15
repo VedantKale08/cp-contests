@@ -5,19 +5,39 @@ import { useRouter } from "next/navigation";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { setCookie } from "cookies-next";
+import { doc, setDoc,getDoc } from "firebase/firestore";
+import { firestore } from "../../firebase/firebase.js"; 
 
 export default function RegistrationForm() {
   const [name, setName] = useState("");
   const [hackerRankId, setHackerRankId] = useState("");
   const router = useRouter();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setCookie("hackerRankId",hackerRankId);
+    setCookie("hackerRankId", hackerRankId);
     setCookie("name", name);
-    router.push(`/wumpus-world/${hackerRankId}`);
+  
+    try {
+      const docRef = doc(firestore, "users", hackerRankId);
+      const docSnap = await getDoc(docRef);
+  
+      if (docSnap.exists()) {
+        alert("This HackerRank ID is already registered. Please use a unique ID.");
+        return;
+      }
+      await setDoc(docRef, {
+        name,
+        hackerRankId,
+      });
+  
+      console.log("User registered successfully in Firebase!");
+      router.push(`/wumpus-world/${hackerRankId}`);
+    } catch (error) {
+      console.error("Error saving user to Firebase:", error);
+    }
   };
-
+  
   return (
     <form
       onSubmit={handleSubmit}
