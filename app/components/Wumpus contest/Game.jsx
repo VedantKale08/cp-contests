@@ -10,7 +10,7 @@ import ScoreBoard from "./ScoreBoard";
 import Link from "next/link";
 import axios from "axios";
 
-export default function Game({ id }) {
+export default function Game({ id, problems }) {
   const {
     grid,
     playerPosition,
@@ -25,15 +25,6 @@ export default function Game({ id }) {
     incrementProblem,
     currentProblemIndex,
   } = useGameStore();
-
-  const problems = [
-    { name: "mystery-sums", steps: 3 },
-    { name: "life-of-a-flower", steps: 4 },
-    { name: "vjti-coc-cp-contest", steps: 6 },
-    { name: "problem-four", steps: 7 },
-    { name: "problem-five", steps: 9 },
-    { name: "problem-six", steps: 10 },
-  ];
 
   const getCurrentCellConditions = () => {
     if (!grid || !playerPosition) return [];

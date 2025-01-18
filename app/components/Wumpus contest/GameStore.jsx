@@ -10,7 +10,7 @@ import {
 } from "../../../constansts";
 import { createEmptyGrid, createInitialVisitedCells } from "./gridUtils";
 import { placePits, placeWumpus, addBreezeAndStench } from "./entityPlacer";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { firestore } from "@/firebase/firebase";
 
 const calculateEuclideanDistance = (playerPosition, goalPosition) => {
@@ -179,13 +179,42 @@ export const useGameStore = create((set, get) => ({
     const temp = await cookieStore.get("hackerRankId");
     const hackerRankId = temp.value;
     const userDocRef = doc(firestore, "users", hackerRankId);
+    // try {
+    //   const newState = get();
+    //   await updateDoc(userDocRef, {
+    //     score: newState.score,
+    //     penalties: newState.penalties,
+    //   });
+    //   console.log("Score updated in Firestore");
+    // } catch (error) {
+    //   console.error("Error updating score in Firestore:", error);
+    // }
+
     try {
       const newState = get();
-      await updateDoc(userDocRef, {
-        score: newState.score,
-        penalties: newState.penalties,
-      });
-      console.log("Score updated in Firestore");
+      const docSnapshot = await getDoc(userDocRef);
+      const contestStartTime = localStorage.getItem("contestStartTime");
+      const elapsedTime = new Date() - new Date(contestStartTime);
+
+      if (docSnapshot.exists()) {
+        const existingData = docSnapshot.data();
+        const existingScore = existingData.score || 0;
+
+        if (newState.score > existingScore) {
+          await updateDoc(userDocRef, {
+            score: newState.score,
+            penalties: newState.penalties,
+            elapsedTime: elapsedTime,
+          });
+          console.log("Score and elapsed time updated in Firestore");
+        } else {
+          console.log("New score is not higher. No update made.");
+        }
+      } else {
+        console.error(
+          "Document does not exist in Firestore. This should not happen if user data is pre-existing."
+        );
+      }
     } catch (error) {
       console.error("Error updating score in Firestore:", error);
     }
