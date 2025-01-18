@@ -2,14 +2,15 @@
 
 "use client";
 
-import React, { useEffect } from 'react';
-import { useGameStore } from './GameStore';
-import Grid from './Grid';
-import Controls from './Controls';
-import ScoreBoard from './ScoreBoard';
-import Link from 'next/link'; 
+import React, { useEffect } from "react";
+import { useGameStore } from "./GameStore";
+import Grid from "./Grid";
+import Controls from "./Controls";
+import ScoreBoard from "./ScoreBoard";
+import Link from "next/link";
+import axios from "axios";
 
-export default function Game() {
+export default function Game({ id }) {
   const {
     grid,
     playerPosition,
@@ -21,7 +22,18 @@ export default function Game() {
     loadState,
     movePlayer,
     remainingSteps,
+    incrementProblem,
+    currentProblemIndex,
   } = useGameStore();
+
+  const problems = [
+    { name: "mystery-sums", steps: 3 },
+    { name: "life-of-a-flower", steps: 4 },
+    { name: "vjti-coc-cp-contest", steps: 6 },
+    { name: "problem-four", steps: 7 },
+    { name: "problem-five", steps: 9 },
+    { name: "problem-six", steps: 10 },
+  ];
 
   const getCurrentCellConditions = () => {
     if (!grid || !playerPosition) return [];
@@ -32,6 +44,52 @@ export default function Game() {
   useEffect(() => {
     loadState();
   }, [loadState]);
+
+  useEffect(() => {
+    const fetchUserProgress = async () => {
+      try {
+        const currentProblemIndex = localStorage.getItem("currentProblemIndex");
+        const currentProblem = problems[currentProblemIndex];
+        if (currentProblem) {
+          const response = await axios.get(
+            `/api/wumpus?problem=${currentProblem.name}`
+          );
+          if (response.data) {
+            const leaderboardData = response.data.models;
+            const found = leaderboardData.find(
+              (element) => element.hacker === id
+            );
+
+            if (found) {
+              const userScore = found.score;
+              const steps = currentProblem.steps;
+              // console.log(currentProblemIndex);
+              // console.log(currentProblem);
+              const newRemainingSteps =
+                userScore >= 100
+                  ? steps
+                  : Math.floor((userScore / 100) * steps);
+              useGameStore.setState((state) => {
+                const newSteps = state.remainingSteps + newRemainingSteps;
+                return { remainingSteps: newSteps };
+              });
+
+              // console.log("NewRemainingSteps", newRemainingSteps);
+              handleProblemCompletion();
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user progress:", error);
+      }
+    };
+
+    fetchUserProgress();
+  }, []);
+
+  const handleProblemCompletion = () => {
+    incrementProblem();
+  };
 
   if (!isLoaded) {
     return (
@@ -46,7 +104,9 @@ export default function Game() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="flex justify-between items-center w-full px-8 mb-8">
-        <h1 className="text-4xl font-bold ml-10">Wumpus World Game</h1>
+        <h1 className="text-4xl font-bold m-auto text-center">
+          Wumpus World Game
+        </h1>
         <Link href="/wumpus-world/scoreboard">
           <button className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 mr-10">
             View Scoreboard
@@ -54,7 +114,7 @@ export default function Game() {
         </Link>
       </div>
 
-      <div className="flex bg-white p-8 rounded-lg shadow-lg space-x-8">
+      <div className="flex bg-white p-8 rounded-lg shadow-lg space-x-14">
         <div>
           <Grid
             grid={grid}

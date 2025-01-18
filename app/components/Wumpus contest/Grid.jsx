@@ -1,5 +1,5 @@
-import React from 'react'
-import Cell from './Cell'
+import React from "react";
+import Cell from "./Cell";
 
 export default function Grid({ grid, playerPosition, visitedCells }) {
   return (
@@ -7,6 +7,7 @@ export default function Grid({ grid, playerPosition, visitedCells }) {
       className={`grid gap-1 mb-4`}
       style={{
         gridTemplateColumns: `repeat(${grid.length}, minmax(0, 1fr))`,
+        transition: "all 0.3s ease-in-out",
       }}
     >
       {grid.map((row, y) =>
@@ -20,5 +21,5 @@ export default function Grid({ grid, playerPosition, visitedCells }) {
         ))
       )}
     </div>
-  )
+  );
 }

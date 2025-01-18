@@ -1,17 +1,17 @@
-import { create } from 'zustand';
-import { 
-  INITIAL_POSITION, 
-  GOAL_POSITION, 
-  DEFAULT_PITS, 
+import { create } from "zustand";
+import {
+  INITIAL_POSITION,
+  GOAL_POSITION,
+  DEFAULT_PITS,
   DEFAULT_STEPS,
   PENALTIES,
   REWARDS,
-  GRID_SIZE
-} from '../../../constansts';
-import { createEmptyGrid, createInitialVisitedCells } from './gridUtils';
-import { placePits, placeWumpus, addBreezeAndStench } from './entityPlacer';
+  GRID_SIZE,
+} from "../../../constansts";
+import { createEmptyGrid, createInitialVisitedCells } from "./gridUtils";
+import { placePits, placeWumpus, addBreezeAndStench } from "./entityPlacer";
 import { doc, updateDoc } from "firebase/firestore";
-import { firestore } from '@/firebase/firebase';
+import { firestore } from "@/firebase/firebase";
 
 const calculateEuclideanDistance = (playerPosition, goalPosition) => {
   const dx = playerPosition.x - goalPosition.x;
@@ -20,11 +20,11 @@ const calculateEuclideanDistance = (playerPosition, goalPosition) => {
 };
 
 const encode = (data) => {
-  return btoa(JSON.stringify(data)); 
+  return btoa(JSON.stringify(data));
 };
 
 const decode = (encodedData) => {
-  return JSON.parse(atob(encodedData)); 
+  return JSON.parse(atob(encodedData));
 };
 
 export const useGameStore = create((set, get) => ({
@@ -36,24 +36,32 @@ export const useGameStore = create((set, get) => ({
   visitedCells: [],
   isLoaded: false,
   remainingSteps: DEFAULT_STEPS,
+  currentProblemIndex: 0,
 
   setStepLimit: (limit) => {
     set({ remainingSteps: limit });
-    localStorage.setItem('wumpusWorldState', encode(get())); 
+    localStorage.setItem("wumpusWorldState", encode(get()));
   },
 
   loadState: async () => {
-    const savedState = localStorage.getItem('wumpusWorldState');
+    const savedState = localStorage.getItem("wumpusWorldState");
+    const savedProblemIndex = localStorage.getItem("currentProblemIndex");
     if (savedState) {
       const parsedState = decode(savedState);
-      set({ ...parsedState, isLoaded: true });
+      set({
+        ...parsedState,
+        currentProblemIndex: savedProblemIndex
+          ? parseInt(savedProblemIndex)
+          : 0,
+        isLoaded: true,
+      });
     } else {
       const initialVisitedCells = createInitialVisitedCells();
       const newGrid = createEmptyGrid();
-      
+
       placePits(newGrid, DEFAULT_PITS);
       placeWumpus(newGrid);
-      newGrid[GOAL_POSITION.y][GOAL_POSITION.x] = ['goal'];
+      newGrid[GOAL_POSITION.y][GOAL_POSITION.x] = ["goal"];
       addBreezeAndStench(newGrid);
 
       const remainingSteps = DEFAULT_STEPS;
@@ -66,22 +74,33 @@ export const useGameStore = create((set, get) => ({
         penalties: 0,
         gameOver: false,
         isLoaded: true,
-        remainingSteps: remainingSteps
+        remainingSteps: remainingSteps,
+        currentProblemIndex: 0,
       };
 
-      localStorage.setItem('wumpusWorldState', encode(initialState)); 
+      localStorage.setItem("currentProblemIndex", 0);
+      localStorage.setItem("wumpusWorldState", encode(initialState));
       set(initialState);
     }
   },
 
+  incrementProblem: () => {
+    set((state) => {
+      const newIndex = state.currentProblemIndex + 1;
+      localStorage.setItem("currentProblemIndex", newIndex);
+      return { currentProblemIndex: newIndex };
+    });
+    localStorage.setItem("wumpusWorldState", encode(get()));
+  },
+
   setGrid: (grid) => {
     set({ grid });
-    localStorage.setItem('wumpusWorldState', encode(get())); 
+    localStorage.setItem("wumpusWorldState", encode(get()));
   },
 
   setPlayerPosition: (newPosition) => {
     set({ playerPosition: newPosition });
-    localStorage.setItem('wumpusWorldState', encode(get())); 
+    localStorage.setItem("wumpusWorldState", encode(get()));
   },
 
   movePlayer: async (direction) => {
@@ -91,21 +110,24 @@ export const useGameStore = create((set, get) => ({
       const newPosition = { ...prev.playerPosition };
 
       switch (direction) {
-        case 'up':
+        case "up":
           if (newPosition.y > 0) newPosition.y--;
           break;
-        case 'down':
+        case "down":
           if (newPosition.y < GRID_SIZE - 1) newPosition.y++;
           break;
-        case 'left':
+        case "left":
           if (newPosition.x > 0) newPosition.x--;
           break;
-        case 'right':
+        case "right":
           if (newPosition.x < GRID_SIZE - 1) newPosition.x++;
           break;
       }
 
-      if (newPosition.x === prev.playerPosition.x && newPosition.y === prev.playerPosition.y) {
+      if (
+        newPosition.x === prev.playerPosition.x &&
+        newPosition.y === prev.playerPosition.y
+      ) {
         return prev;
       }
 
@@ -114,7 +136,7 @@ export const useGameStore = create((set, get) => ({
         return prev;
       }
 
-      const newVisitedCells = prev.visitedCells.map(row => [...row]);
+      const newVisitedCells = prev.visitedCells.map((row) => [...row]);
       newVisitedCells[newPosition.y][newPosition.x] = true;
 
       const cellTypes = prev.grid[newPosition.y][newPosition.x];
@@ -127,16 +149,19 @@ export const useGameStore = create((set, get) => ({
         newRemainingSteps--;
       }
 
-      if (cellTypes.includes('pit')) {
+      if (cellTypes.includes("pit")) {
         newPenalties += PENALTIES.PIT;
-      } else if (cellTypes.includes('wumpus')) {
+      } else if (cellTypes.includes("wumpus")) {
         newPenalties += PENALTIES.WUMPUS;
-      } else if (cellTypes.includes('goal')) {
+      } else if (cellTypes.includes("goal")) {
         newScore += REWARDS.GOAL;
         gameOver = true;
       }
 
-      const euclideanDistance = ((1 - calculateEuclideanDistance(newPosition, GOAL_POSITION) / 10) * 100).toFixed(2);
+      const euclideanDistance = (
+        (1 - calculateEuclideanDistance(newPosition, GOAL_POSITION) / 10) *
+        100
+      ).toFixed(2);
       newScore = Math.max(newScore, euclideanDistance);
 
       const newState = {
@@ -148,7 +173,7 @@ export const useGameStore = create((set, get) => ({
         gameOver,
         remainingSteps: newRemainingSteps,
       };
-      localStorage.setItem('wumpusWorldState', encode(newState)); 
+      localStorage.setItem("wumpusWorldState", encode(newState));
       return newState;
     });
     const temp = await cookieStore.get("hackerRankId");
@@ -164,5 +189,5 @@ export const useGameStore = create((set, get) => ({
     } catch (error) {
       console.error("Error updating score in Firestore:", error);
     }
-  }
+  },
 }));

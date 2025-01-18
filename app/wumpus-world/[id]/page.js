@@ -1,5 +1,5 @@
-import React from 'react'
-import Game from '../../components/Wumpus contest/Game'
+import React from "react";
+import Game from "../../components/Wumpus contest/Game";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -10,13 +10,15 @@ const isRegistered = async () => {
     redirect(`/`);
   }
 };
-
-export default async function Home() {
+async function page({ params }) {
+  const id = await params.id;
   await isRegistered();
+
   return (
     <main>
-      <Game />
+      <Game id={id} />
     </main>
-  )
+  );
 }
 
+export default page;
