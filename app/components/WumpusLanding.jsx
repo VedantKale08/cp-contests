@@ -4,7 +4,7 @@ import CountdownTimer from "./CountdownTimer";
 import EventDetails from "./EventDetails";
 import Prizes from "./Prizes";
 import Footer from "./Footer";
-import RegistrationForm from "./RegistrationForm";
+import RegistrationForm2 from "./RegistrationForm2";
 
 const WumpusLanding = () => {
   return (
@@ -36,7 +36,7 @@ const WumpusLanding = () => {
               Register for the Event
             </h2>
             <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-              <RegistrationForm />
+              <RegistrationForm2 />
             </div>
           </div>
         </section>
