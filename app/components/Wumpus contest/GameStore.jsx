@@ -19,11 +19,11 @@ const calculateEuclideanDistance = (playerPosition, goalPosition) => {
   return Math.sqrt(dx * dx + dy * dy);
 };
 
-const encode = (data) => {
+export const encode = (data) => {
   return btoa(JSON.stringify(data));
 };
 
-const decode = (encodedData) => {
+export const decode = (encodedData) => {
   return JSON.parse(atob(encodedData));
 };
 

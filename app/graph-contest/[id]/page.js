@@ -18,48 +18,48 @@ async function page({ params }) {
   const initialGraph = {
     nodes: [
       {
-        id: 1,
-        label: "Start\nProblem 1",
+        id: 0,
+        label: "Start",
         x: 0,
         y: 0,
         color: "#ffcc00",
-        image: "/unlock.svg",
+        image: "/check.svg",
         imagePadding: 15,
-        contestLink: "https://www.hackerrank.com/contest/problem1",
+        contestLink: "",
       }, // Yellow
       {
-        id: 2,
-        label: "Problem 2",
+        id: 1,
+        label: "Problem 1",
         x: 200,
         y: 200,
         color: "#ff6666",
-        image: "/lock.svg",
+        image: "/unlock.svg",
         imagePadding: 15,
         contestLink: "https://www.hackerrank.com/contest/problem1",
       }, // Red
       {
-        id: 3,
-        label: "Problem 3",
+        id: 2,
+        label: "Problem 2",
         x: 200,
         y: 0,
         color: "#66cc66",
-        image: "/lock.svg",
+        image: "/unlock.svg",
         imagePadding: 15,
         contestLink: "https://www.hackerrank.com/contest/problem1",
       }, // Green
       {
-        id: 4,
-        label: "Problem 4",
+        id: 3,
+        label: "Problem 3",
         x: 200,
         y: -200,
         color: "#66ccff",
-        image: "/lock.svg",
+        image: "/unlock.svg",
         imagePadding: 15,
         contestLink: "https://www.hackerrank.com/contest/problem1",
       }, // Blue
       {
-        id: 5,
-        label: "Problem 5",
+        id: 4,
+        label: "Problem 4",
         x: 400,
         y: 200,
         color: "#ffccff",
@@ -68,8 +68,8 @@ async function page({ params }) {
         contestLink: "https://www.hackerrank.com/contest/problem1",
       }, // Pink
       {
-        id: 6,
-        label: "Problem 6",
+        id: 5,
+        label: "Problem 5",
         x: 400,
         y: 0,
         color: "#cc9966",
@@ -78,8 +78,8 @@ async function page({ params }) {
         contestLink: "https://www.hackerrank.com/contest/problem1",
       }, // Brown
       {
-        id: 7,
-        label: "Problem 7",
+        id: 6,
+        label: "Problem 6",
         x: 400,
         y: -200,
         color: "#ff9966",
@@ -88,8 +88,8 @@ async function page({ params }) {
         contestLink: "https://www.hackerrank.com/contest/problem1",
       }, // Orange
       {
-        id: 8,
-        label: "Problem 8",
+        id: 7,
+        label: "Problem 7",
         x: 600,
         y: 200,
         color: "#6666cc",
@@ -98,8 +98,8 @@ async function page({ params }) {
         contestLink: "https://www.hackerrank.com/contest/problem1",
       }, // Purple
       {
-        id: 9,
-        label: "Problem 9",
+        id: 8,
+        label: "Problem 8",
         x: 600,
         y: 0,
         color: "#99cc99",
@@ -108,8 +108,8 @@ async function page({ params }) {
         contestLink: "https://www.hackerrank.com/contest/problem1",
       }, // Light Green
       {
-        id: 10,
-        label: "Problem 10",
+        id: 9,
+        label: "Problem 9",
         x: 800,
         y: 200,
         color: "#cc6666",
@@ -118,8 +118,8 @@ async function page({ params }) {
         contestLink: "https://www.hackerrank.com/contest/problem1",
       }, // Dark Red
       {
-        id: 11,
-        label: "Problem 11",
+        id: 10,
+        label: "Problem 10",
         x: 800,
         y: 0,
         color: "#99ccff",
@@ -128,8 +128,8 @@ async function page({ params }) {
         contestLink: "https://www.hackerrank.com/contest/problem1",
       }, // Light Blue
       {
-        id: 12,
-        label: "Problem 12",
+        id: 11,
+        label: "Problem 11",
         x: 1000,
         y: 0,
         color: "#ccff66",
@@ -138,8 +138,8 @@ async function page({ params }) {
         contestLink: "https://www.hackerrank.com/contest/problem1",
       }, // Lime
       {
-        id: 13,
-        label: "Goal\nProblem 13",
+        id: 12,
+        label: "Goal\nProblem 12",
         x: 1200,
         y: 0,
         color: "#ffcc00",
@@ -149,20 +149,20 @@ async function page({ params }) {
       }, // Yellow
     ],
     edges: [
-      { from: 1, to: 2 },
-      { from: 1, to: 3 },
+      { from: 0, to: 1 },
+      { from: 0, to: 2 },
+      { from: 0, to: 3 },
       { from: 1, to: 4 },
       { from: 2, to: 5 },
       { from: 3, to: 6 },
       { from: 4, to: 7 },
       { from: 5, to: 8 },
-      { from: 6, to: 9 },
+      { from: 7, to: 9 },
       { from: 8, to: 10 },
-      { from: 9, to: 11 },
+      { from: 10, to: 11 },
+      { from: 6, to: 10 },
       { from: 11, to: 12 },
-      { from: 7, to: 11 },
-      { from: 12, to: 13 },
-      { from: 10, to: 13 },
+      { from: 9, to: 11 },
     ],
   };
 
