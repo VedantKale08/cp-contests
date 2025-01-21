@@ -10,6 +10,12 @@ import { Trophy, Medal, Award } from 'lucide-react'
 export default function Scoreboard() {
   const [finalScoreboard, setFinalScoreboard] = useState([])
 
+  const formatElapsedTime = (ms) => {
+    const minutes = Math.floor(ms / 60000)
+    const seconds = ((ms % 60000) / 1000).toFixed(0)
+    return `${minutes}:${seconds.padStart(2, '0')}`
+  }
+
   const fetchFinalScoreboard = async () => {
     try {
       const snapshot = await getDocs(collection(firestore, 'users'))
@@ -18,11 +24,15 @@ export default function Scoreboard() {
         ...doc.data()
       }))
 
+      // Updated sorting logic
       playersData.sort((a, b) => {
-        if (b.score === a.score) {
+        if (b.score !== a.score) {
+          return b.score - a.score
+        }
+        if (b.penalties !== a.penalties) {
           return a.penalties - b.penalties
         }
-        return b.score - a.score
+        return (a.elapsedTime || 0) - (b.elapsedTime || 0)
       })
 
       setFinalScoreboard(playersData)
@@ -50,7 +60,7 @@ export default function Scoreboard() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-100 to-white p-4">
-      <Card className="w-full max-w-4xl shadow-xl">
+      <Card className="w-full max-w-5xl shadow-xl">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold text-blue-600">Final Scoreboard</CardTitle>
         </CardHeader>
@@ -63,6 +73,7 @@ export default function Scoreboard() {
                 <TableHead>HackerRank ID</TableHead>
                 <TableHead className="text-right">Score</TableHead>
                 <TableHead className="text-right">Penalties</TableHead>
+                <TableHead className="text-right">Time Taken</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -77,13 +88,20 @@ export default function Scoreboard() {
                     </TableCell>
                     <TableCell>{player.name ? player.name : 'Anonymous'}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{player.id}</TableCell>
-                    <TableCell className="text-right font-medium text-green-600">{player.score}</TableCell>
-                    <TableCell className="text-right font-medium text-red-600">{player.penalties}</TableCell>
+                    <TableCell className="text-right font-medium text-green-600">
+                      {player.score}
+                    </TableCell>
+                    <TableCell className="text-right font-medium text-red-600">
+                      {player.penalties}
+                    </TableCell>
+                    <TableCell className="text-right font-medium text-blue-600">
+                      {formatElapsedTime(player.elapsedTime || 0)}
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center">No players found</TableCell>
+                  <TableCell colSpan={6} className="text-center">No players found</TableCell>
                 </TableRow>
               )}
             </TableBody>
@@ -93,4 +111,3 @@ export default function Scoreboard() {
     </div>
   )
 }
-

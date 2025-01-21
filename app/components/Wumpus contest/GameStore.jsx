@@ -27,6 +27,17 @@ const decode = (encodedData) => {
   return JSON.parse(atob(encodedData));
 };
 
+const TWO_HOURS_MS = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+
+const checkTimeAndRedirect = (contestStartTime) => {
+  const elapsedTime = new Date() - new Date(contestStartTime);
+  if (elapsedTime > TWO_HOURS_MS) {
+    window.location.href = '/';
+    return true;
+  }
+  return false;
+};
+
 export const useGameStore = create((set, get) => ({
   grid: [],
   playerPosition: INITIAL_POSITION,
@@ -39,11 +50,17 @@ export const useGameStore = create((set, get) => ({
   currentProblemIndex: 0,
 
   setStepLimit: (limit) => {
+    const contestStartTime = localStorage.getItem("contestStartTime");
+    if (checkTimeAndRedirect(contestStartTime)) return;
+
     set({ remainingSteps: limit });
     localStorage.setItem("wumpusWorldState", encode(get()));
   },
 
   loadState: async () => {
+    const contestStartTime = localStorage.getItem("contestStartTime");
+    if (checkTimeAndRedirect(contestStartTime)) return;
+
     const savedState = localStorage.getItem("wumpusWorldState");
     const savedProblemIndex = localStorage.getItem("currentProblemIndex");
     if (savedState) {
@@ -85,6 +102,9 @@ export const useGameStore = create((set, get) => ({
   },
 
   incrementProblem: () => {
+    const contestStartTime = localStorage.getItem("contestStartTime");
+    if (checkTimeAndRedirect(contestStartTime)) return;
+
     set((state) => {
       const newIndex = state.currentProblemIndex + 1;
       localStorage.setItem("currentProblemIndex", newIndex);
@@ -94,16 +114,25 @@ export const useGameStore = create((set, get) => ({
   },
 
   setGrid: (grid) => {
+    const contestStartTime = localStorage.getItem("contestStartTime");
+    if (checkTimeAndRedirect(contestStartTime)) return;
+
     set({ grid });
     localStorage.setItem("wumpusWorldState", encode(get()));
   },
 
   setPlayerPosition: (newPosition) => {
+    const contestStartTime = localStorage.getItem("contestStartTime");
+    if (checkTimeAndRedirect(contestStartTime)) return;
+
     set({ playerPosition: newPosition });
     localStorage.setItem("wumpusWorldState", encode(get()));
   },
 
   movePlayer: async (direction) => {
+    const contestStartTime = localStorage.getItem("contestStartTime");
+    if (checkTimeAndRedirect(contestStartTime)) return;
+
     set((prev) => {
       if (prev.gameOver) return prev;
 
@@ -176,47 +205,38 @@ export const useGameStore = create((set, get) => ({
       localStorage.setItem("wumpusWorldState", encode(newState));
       return newState;
     });
-    const temp = await cookieStore.get("hackerRankId");
-    const hackerRankId = temp.value;
-    const userDocRef = doc(firestore, "users", hackerRankId);
-    // try {
-    //   const newState = get();
-    //   await updateDoc(userDocRef, {
-    //     score: newState.score,
-    //     penalties: newState.penalties,
-    //   });
-    //   console.log("Score updated in Firestore");
-    // } catch (error) {
-    //   console.error("Error updating score in Firestore:", error);
-    // }
+    const elapsedTime = new Date() - new Date(contestStartTime);
+    if (elapsedTime <= TWO_HOURS_MS) {
+      const temp = await cookieStore.get("hackerRankId");
+      const hackerRankId = temp.value;
+      const userDocRef = doc(firestore, "users", hackerRankId);
 
-    try {
-      const newState = get();
-      const docSnapshot = await getDoc(userDocRef);
-      const contestStartTime = localStorage.getItem("contestStartTime");
-      const elapsedTime = new Date() - new Date(contestStartTime);
+      try {
+        const newState = get();
+        const docSnapshot = await getDoc(userDocRef);
 
-      if (docSnapshot.exists()) {
-        const existingData = docSnapshot.data();
-        const existingScore = existingData.score || 0;
+        if (docSnapshot.exists()) {
+          const existingData = docSnapshot.data();
+          const existingScore = existingData.score || 0;
 
-        if (newState.score > existingScore) {
-          await updateDoc(userDocRef, {
-            score: newState.score,
-            penalties: newState.penalties,
-            elapsedTime: elapsedTime,
-          });
-          console.log("Score and elapsed time updated in Firestore");
+          if (newState.score > existingScore) {
+            await updateDoc(userDocRef, {
+              score: newState.score,
+              penalties: newState.penalties,
+              elapsedTime: elapsedTime,
+            });
+            console.log("Score and elapsed time updated in Firestore");
+          } else {
+            console.log("New score is not higher. No update made.");
+          }
         } else {
-          console.log("New score is not higher. No update made.");
+          console.error(
+            "Document does not exist in Firestore. This should not happen if user data is pre-existing."
+          );
         }
-      } else {
-        console.error(
-          "Document does not exist in Firestore. This should not happen if user data is pre-existing."
-        );
+      } catch (error) {
+        console.error("Error updating score in Firestore:", error);
       }
-    } catch (error) {
-      console.error("Error updating score in Firestore:", error);
     }
   },
 }));

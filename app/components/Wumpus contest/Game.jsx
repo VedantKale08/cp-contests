@@ -46,11 +46,12 @@ export default function Game({ id, problems }) {
             `/api/wumpus?problem=${currentProblem.name}`
           );
           if (response.data) {
+            console.log("User progress response:", response.data);
             const leaderboardData = response.data.models;
             const found = leaderboardData.find(
-              (element) => element.hacker === id
+              (element) => element.hacker === id.value
             );
-
+            console.log("Found user progress:", found);
             if (found) {
               const userScore = found.score;
               const steps = currentProblem.steps;
@@ -64,8 +65,6 @@ export default function Game({ id, problems }) {
                 const newSteps = state.remainingSteps + newRemainingSteps;
                 return { remainingSteps: newSteps };
               });
-
-              // console.log("NewRemainingSteps", newRemainingSteps);
               handleProblemCompletion();
             }
           }
