@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 async function fetchLeaderboardPage(problem, offset) {
   const response = await fetch(
-    `https://www.hackerrank.com/grid-of-doom/challenges/${problem}/leaderboard?offset=${offset}&limit=100&include_practice=false`
+    `https://www.hackerrank.com/grid-of-doom/challenges/${problem}/leaderboard?offset=${offset}`
   );
   return response.json();
 }
