@@ -5,10 +5,14 @@ import { addDoc, collection } from "firebase/firestore";
 import { firestore } from "@/firebase/firebase";
 import { deleteCookie, getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
+import { decode } from "../Wumpus contest/GameStore";
 
 function ConfirmationPopup({ setPopup, solvedNodes, longestRoute }) {
   const ref = collection(firestore, "submissions");
   const router = useRouter();
+  
+  let submissions = localStorage.getItem("submissionTime");
+  submissions = decode(submissions);  
   
   const handleSubmit = () => {
     try {
@@ -16,6 +20,7 @@ function ConfirmationPopup({ setPopup, solvedNodes, longestRoute }) {
         team_name: getCookie("teamName"),
         hackerrank_username: getCookie("hackerRankId"),
         solved_questions: solvedNodes,
+        submissionsTime: submissions,
         route: longestRoute,
         score: solvedNodes?.length ?? 0,
       };
