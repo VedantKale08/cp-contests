@@ -11,16 +11,17 @@ const isRegistered = async () => {
   }
 };
 async function page({ params }) {
-  const id = await params.id;
+  const cookieStore = await cookies();
+  const id = cookieStore.get("hackerRankId");
   await isRegistered();
 
   const problems = [
-    { name: "mystery-sums", steps: 3 },
-    { name: "life-of-a-flower", steps: 4 },
-    { name: "vjti-coc-cp-contest", steps: 6 },
-    { name: "problem-four", steps: 7 },
-    { name: "problem-five", steps: 9 },
-    { name: "problem-six", steps: 10 },
+    { name: "estimating-fossil-ages", steps: 3 },
+    { name: "string-duel-1", steps: 3 },
+    { name: "the-kasol-conundrum123456", steps: 6 },
+    { name: "find-the-cocchains", steps: 6 },
+    { name: "we-got-rtx-6090-before-gta-vi", steps: 10},
+    { name: "the-dance-of-eternal-gaze", steps: 10 },
   ];
 
   return (

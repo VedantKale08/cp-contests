@@ -6,9 +6,9 @@ export const DEFAULT_STEPS = 0;
 
 export const PENALTIES = {
   PIT: 100,
-  WUMPUS: 1000,
+  WUMPUS: 500,
 };
 
 export const REWARDS = {
-  GOAL: 1000,
+  GOAL: 0,
 };
