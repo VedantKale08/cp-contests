@@ -3,10 +3,10 @@ import { isValidPosition, getAdjacentCells } from './gridUtils';
 
 export const placePits = (grid) => {
   const predefinedPits = [
-    { x: 3, y: 1 },
-    { x: 4, y: 5 },
-    { x: 4, y: 3 },
-    { x: 1, y: 4 },
+    { x: 4, y: 0 },
+    { x: 7, y: 3 },
+    { x: 4, y: 7 },
+    { x: 0, y: 4 },
   ];
 
   predefinedPits.forEach(({ x, y }) => {
@@ -40,10 +40,7 @@ export const placeWumpus = (grid) => {
 };
 
 export const addBreezeAndStench = (grid) => {
-  // First pass: collect all effects without overwriting
-  const cellEffects = new Map(); // Use Map to store effects for each cell
-
-  // Helper function to add effect to a cell's collection
+  const cellEffects = new Map();
   const addEffectToCell = (x, y, effect) => {
     const key = `${x},${y}`;
     if (!cellEffects.has(key)) {
@@ -51,8 +48,6 @@ export const addBreezeAndStench = (grid) => {
     }
     cellEffects.get(key).add(effect);
   };
-
-  // Collect all effects
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[0].length; x++) {
       if (grid[y][x].includes('pit')) {
@@ -66,18 +61,14 @@ export const addBreezeAndStench = (grid) => {
       }
     }
   }
-
-  // Apply effects to the grid
   cellEffects.forEach((effects, key) => {
     const [x, y] = key.split(',').map(Number);
     const cell = grid[y][x];
     
     if (cell[0] === 'empty') {
-      // Convert Set to Array and ensure only one of each effect
       grid[y][x] = [...effects];
     } else if (cell.includes('pit') || cell.includes('wumpus')) {
-      // For pit or wumpus cells, add unique effects while preserving the original element
-      const mainElement = cell[0]; // 'pit' or 'wumpus'
+      const mainElement = cell[0];
       const newEffects = [...effects].filter(effect => !cell.includes(effect));
       grid[y][x] = [mainElement, ...newEffects];
     }
