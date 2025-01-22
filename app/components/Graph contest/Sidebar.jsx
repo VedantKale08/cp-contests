@@ -15,6 +15,11 @@ const [submissionTime, setSubmissionTime] = useState(() => {
   return submissions ? decode(submissions) : [];
 });
 
+const [solvedDistance, setSolvedDistance] = useState(() => {
+  const solved = localStorage.getItem("solvedDistance");
+  return solved ? decode(solved) : [];
+});
+
   useEffect(() => {
     localStorage.setItem("checkedState", JSON.stringify(checkedState));
   }, [checkedState]);
@@ -22,6 +27,25 @@ const [submissionTime, setSubmissionTime] = useState(() => {
   useEffect(() => {
     localStorage.setItem("submissionTime", encode(submissionTime));
   }, [submissionTime]);  
+
+  useEffect(() => {
+    localStorage.setItem("solvedDistance", encode(solvedDistance));
+  }, [solvedDistance]);  
+
+  const [distance, setDistance] = useState({
+    12 : 0,
+    11 : 1,
+    10 : 2,
+    9 : 2,
+    8 : 3,
+    7 : 3,
+    6: 3,
+    5 : 4,
+    4 : 4,
+    3 : 4,
+    2 : 5,
+    1 : 5
+  });
   
 
   const checkSubmission = async (itemId, key) => {
@@ -49,13 +73,20 @@ const [submissionTime, setSubmissionTime] = useState(() => {
           const updatedState = [...checkedState];
           updatedState[key] = true;
           setCheckedState(updatedState);
+
           setLoader(false);
-          let currTime = new Date().toLocaleTimeString();
+
+          let currTime = new Date();
+          currTime = currTime.getHours() + ':' + currTime.getMinutes() + ':' + currTime.getSeconds();
           setSubmissionTime((prev) => {
             let updatedTimes = [...prev, { [itemId]: currTime }];
             console.log(updatedTimes);
             return updatedTimes;
           });
+
+          let d = distance[itemId];
+          setSolvedDistance((prev) => [...prev, { [itemId]: d}]);
+          
           toast("Great job! Problem solved successfully!", { icon: "🎉" });
         } else {
           setLoader(false);

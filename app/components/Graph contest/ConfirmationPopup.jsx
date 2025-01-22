@@ -13,16 +13,36 @@ function ConfirmationPopup({ setPopup, solvedNodes, longestRoute }) {
   
   let submissions = localStorage.getItem("submissionTime");
   submissions = decode(submissions);  
+
+  let solvedDistance = localStorage.getItem("solvedDistance");
+  solvedDistance = decode(solvedDistance);  
+
+   const findMinValueWithKey = () => {
+     let minKey = null;
+     let minValue = Infinity;
+
+     solvedDistance.forEach((obj) => {
+       const [key, value] = Object.entries(obj)[0];
+       if (value < minValue) {
+         minValue = value;
+         minKey = key;
+       }
+     });
+
+     return { "question": minKey, "distance": minValue };
+   };
   
   const handleSubmit = () => {
     try {
+      
       let data = {
         team_name: getCookie("teamName"),
         hackerrank_username: getCookie("hackerRankId"),
         solved_questions: solvedNodes,
         submissionsTime: submissions,
         route: longestRoute,
-        score: solvedNodes?.length ?? 0,
+        solvedDistance: solvedDistance,
+        minDistance: findMinValueWithKey(),
       };
 
       addDoc(ref, data);

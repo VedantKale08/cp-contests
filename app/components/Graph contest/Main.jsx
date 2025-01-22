@@ -13,9 +13,9 @@ const Graph = dynamic(() => import("react-vis-network-graph"), { ssr: false });
 
 function Main({ id, initialGraph }) {
   const routes = [
-    [1, 2, 5, 8, 10, 13],
-    [1, 3, 6, 9, 11, 12, 13],
-    [1, 4, 7, 11, 12, 13],
+    [3, 6, 10, 11, 12],
+    [2, 5, 8, 10, 11, 12],
+    [1, 4, 7, 9, 11, 12],
   ];
 
   const [graph, setGraph] = useState(() => {
