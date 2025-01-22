@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { decode, encode } from "../Wumpus contest/GameStore";
+import contestJson from '../../../graph-contest.json'
 
 function Sidebar({ id, unlockNeighbors, unlockedNodes, setLoader }) {
   const [checkedState, setCheckedState] = useState(
@@ -21,6 +22,7 @@ const [submissionTime, setSubmissionTime] = useState(() => {
   useEffect(() => {
     localStorage.setItem("submissionTime", encode(submissionTime));
   }, [submissionTime]);  
+  
 
   const checkSubmission = async (itemId, key) => {
     if (checkedState[key]) return;
@@ -31,8 +33,12 @@ const [submissionTime, setSubmissionTime] = useState(() => {
     }
 
     setLoader(true);
+    let currentProblem = contestJson[itemId];
+    
     try {
-      const response = await axios.get("/api/leaderboard");
+      const response = await axios.get(
+        `/api/leaderboard?challenge_name=${currentProblem.challenge_name}&contest_name=${currentProblem.contest_name}`
+      );
       if (response.data) {
         const leaderboardData = response.data.models;
         const found = leaderboardData?.some(

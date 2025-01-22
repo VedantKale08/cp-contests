@@ -35,7 +35,7 @@ async function page({ params }) {
         color: "#ff6666",
         image: "/unlock.svg",
         imagePadding: 15,
-        contestLink: "https://www.hackerrank.com/contest/problem1",
+        contestLink: "https://www.hackerrank.com/travelling-coder-mumbai",
       }, // Red
       {
         id: 2,
@@ -45,7 +45,7 @@ async function page({ params }) {
         color: "#66cc66",
         image: "/unlock.svg",
         imagePadding: 15,
-        contestLink: "https://www.hackerrank.com/contest/problem1",
+        contestLink: "https://www.hackerrank.com/travelling-2-coder-delhi",
       }, // Green
       {
         id: 3,
@@ -55,7 +55,7 @@ async function page({ params }) {
         color: "#66ccff",
         image: "/unlock.svg",
         imagePadding: 15,
-        contestLink: "https://www.hackerrank.com/contest/problem1",
+        contestLink: "https://www.hackerrank.com/travelling-coder-3-ahmedabad",
       }, // Blue
       {
         id: 4,
@@ -65,7 +65,7 @@ async function page({ params }) {
         color: "#ffccff",
         image: "/lock.svg",
         imagePadding: 15,
-        contestLink: "https://www.hackerrank.com/contest/problem1",
+        contestLink: "https://www.hackerrank.com/travelling-coder-4-chennai",
       }, // Pink
       {
         id: 5,
@@ -75,7 +75,7 @@ async function page({ params }) {
         color: "#cc9966",
         image: "/lock.svg",
         imagePadding: 15,
-        contestLink: "https://www.hackerrank.com/contest/problem1",
+        contestLink: "https://www.hackerrank.com/travelling-coder-bengaluru5",
       }, // Brown
       {
         id: 6,
@@ -85,7 +85,7 @@ async function page({ params }) {
         color: "#ff9966",
         image: "/lock.svg",
         imagePadding: 15,
-        contestLink: "https://www.hackerrank.com/contest/problem1",
+        contestLink: "https://www.hackerrank.com/travelling-coder6-kochi",
       }, // Orange
       {
         id: 7,
@@ -95,7 +95,7 @@ async function page({ params }) {
         color: "#6666cc",
         image: "/lock.svg",
         imagePadding: 15,
-        contestLink: "https://www.hackerrank.com/contest/problem1",
+        contestLink: "https://www.hackerrank.com/travelling-coder-kolkata7",
       }, // Purple
       {
         id: 8,
@@ -105,7 +105,7 @@ async function page({ params }) {
         color: "#99cc99",
         image: "/lock.svg",
         imagePadding: 15,
-        contestLink: "https://www.hackerrank.com/contest/problem1",
+        contestLink: "https://www.hackerrank.com/8-travelling-coder-hyderabad",
       }, // Light Green
       {
         id: 9,
@@ -115,7 +115,7 @@ async function page({ params }) {
         color: "#cc6666",
         image: "/lock.svg",
         imagePadding: 15,
-        contestLink: "https://www.hackerrank.com/contest/problem1",
+        contestLink: "https://www.hackerrank.com/travelling-coder-lucknow9",
       }, // Dark Red
       {
         id: 10,
@@ -125,7 +125,7 @@ async function page({ params }) {
         color: "#99ccff",
         image: "/lock.svg",
         imagePadding: 15,
-        contestLink: "https://www.hackerrank.com/contest/problem1",
+        contestLink: "https://www.hackerrank.com/travelling-coder10-pune",
       }, // Light Blue
       {
         id: 11,
@@ -135,7 +135,7 @@ async function page({ params }) {
         color: "#ccff66",
         image: "/lock.svg",
         imagePadding: 15,
-        contestLink: "https://www.hackerrank.com/contest/problem1",
+        contestLink: "https://www.hackerrank.com/travelling11-coder-jaipur",
       }, // Lime
       {
         id: 12,
@@ -145,7 +145,7 @@ async function page({ params }) {
         color: "#ffcc00",
         image: "/lock.svg",
         imagePadding: 15,
-        contestLink: "https://www.hackerrank.com/contest/problem1",
+        contestLink: "https://www.hackerrank.com/travelling-12-coder-guwahati",
       }, // Yellow
     ],
     edges: [
