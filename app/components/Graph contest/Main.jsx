@@ -4,34 +4,38 @@ import Header from "../Header";
 import Sidebar from "./Sidebar";
 import dynamic from "next/dynamic";
 import ConfirmationPopup from "./ConfirmationPopup";
+import toast from "react-hot-toast";
+import Loader from "../Loader";
+import { decode, encode } from "../Wumpus contest/GameStore";
 
 // Dynamically import Graph with ssr: false to disable server-side rendering
 const Graph = dynamic(() => import("react-vis-network-graph"), { ssr: false });
 
 function Main({ id, initialGraph }) {
   const routes = [
-    [1, 2, 5, 8, 10, 13],
-    [1, 3, 6, 9, 11, 12, 13],
-    [1, 4, 7, 11, 12, 13],
+    [3, 6, 10, 11, 12],
+    [2, 5, 8, 10, 11, 12],
+    [1, 4, 7, 9, 11, 12],
   ];
 
   const [graph, setGraph] = useState(() => {
     const savedGraph = localStorage.getItem("graphState");
-    return savedGraph ? JSON.parse(savedGraph) : initialGraph;
+    return savedGraph ? decode(savedGraph) : initialGraph;
   });
 
   const [unlockedNodes, setUnlockedNodes] = useState(() => {
     const savedUnlockedNodes = localStorage.getItem("unlockedNodes");
-    return savedUnlockedNodes ? JSON.parse(savedUnlockedNodes) : [1];
+    return savedUnlockedNodes ? decode(savedUnlockedNodes) : [1, 2, 3];
   });
 
   const [solvedNodes, setSolvedNodes] = useState(() => {
     const savedSolvedNodes = localStorage.getItem("solvedNodes");
-    return savedSolvedNodes ? JSON.parse(savedSolvedNodes) : [];
+    return savedSolvedNodes ? decode(savedSolvedNodes) : [];
   });
 
   const [longestRoute, setLongestRoute] = useState([]);
   const [popUp, setPopup] = useState(false);
+  const [isLoader, setLoader] = useState(false);
 
   const options = {
     physics: false,
@@ -67,7 +71,6 @@ function Main({ id, initialGraph }) {
   const events = {
     click: (event) => {
       const { nodes } = event;
-      console.log(event);
       if (nodes.length > 0) {
         const clickedNodeId = nodes[0];
         handleNodeClick(clickedNodeId);
@@ -76,25 +79,33 @@ function Main({ id, initialGraph }) {
   };
 
   const handleNodeClick = (nodeId) => {
+    if(nodeId === 0) return;
+
     const clickedNode = graph.nodes.find((node) => node.id === nodeId);    
-    if (unlockedNodes.includes(nodeId)) {
+    if (unlockedNodes.includes(nodeId) && !solvedNodes.includes(nodeId)) {
       window.open(clickedNode.contestLink, "_blank");
-    } else {
-      alert("This node is locked. Solve the previous problems to unlock it!");
+    } else if (!unlockedNodes.includes(nodeId)) {
+      toast.error(
+        "This node is locked. Solve the previous problems to unlock it!"
+      );
     }
   };
 
   const unlockNeighbors = (nodeId) => {
-    setSolvedNodes((prev) => {
+    if(!solvedNodes.includes(nodeId)) {
+      setSolvedNodes((prev) => {
       const updatedSolvedNodes = [...prev, nodeId];
-      localStorage.setItem("solvedNodes", JSON.stringify(updatedSolvedNodes));
+      localStorage.setItem("solvedNodes", encode(updatedSolvedNodes));
       updateLongestRoute(updatedSolvedNodes);
       return updatedSolvedNodes;
     });
+    }
 
     const neighbors = graph.edges
-      .filter((edge) => edge.from === nodeId)
+      .filter((edge) => edge.from === nodeId && !solvedNodes.includes(edge.to))
       .map((edge) => edge.to);
+
+
 
     setGraph((prevGraph) => {
       const updatedNodes = prevGraph.nodes.map((node) =>
@@ -107,7 +118,7 @@ function Main({ id, initialGraph }) {
 
       const updatedGraph = { ...prevGraph, nodes: updatedNodes };
 
-      localStorage.setItem("graphState", JSON.stringify(updatedGraph));
+      localStorage.setItem("graphState", encode(updatedGraph));
       return updatedGraph;
     });
 
@@ -116,7 +127,7 @@ function Main({ id, initialGraph }) {
 
       localStorage.setItem(
         "unlockedNodes",
-        JSON.stringify(updatedUnlockedNodes)
+        encode(updatedUnlockedNodes)
       );
       return updatedUnlockedNodes;
     });
@@ -148,7 +159,7 @@ function Main({ id, initialGraph }) {
   }, [solvedNodes]);
 
   useEffect(() => {
-    localStorage.setItem("graphState", JSON.stringify(graph));
+    localStorage.setItem("graphState", encode(graph));
   }, []);
 
   return (
@@ -176,8 +187,10 @@ function Main({ id, initialGraph }) {
           id={id}
           unlockNeighbors={unlockNeighbors}
           unlockedNodes={unlockedNodes}
+          setLoader={setLoader}
         />
         {popUp && <ConfirmationPopup setPopup={setPopup} solvedNodes={solvedNodes} longestRoute={longestRoute}/>}
+        {isLoader && <Loader/>}
       </main>
     </div>
   );
