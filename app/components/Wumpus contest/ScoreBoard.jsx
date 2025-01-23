@@ -3,7 +3,6 @@ import { Trophy, Skull, Timer, Wind, SnailIcon as Nose, LockKeyholeIcon as Hole,
 import { useGameStore } from './GameStore'
 
 export default function ScoreBoard({ score, penalties,currentCellConditions }) {
-  console.log(currentCellConditions);
 
   const ConditionIcon = ({ condition, icon: Icon, text }) => (
     <div className={`flex items-center ${currentCellConditions.includes(condition) ? 'text-blue-600' : 'text-gray-400'}`}>
@@ -12,7 +11,6 @@ export default function ScoreBoard({ score, penalties,currentCellConditions }) {
     </div>
   );
   const remainingSteps = useGameStore((state) => state.remainingSteps)
-  console.log("Remaining steps in ScoreBoard:", remainingSteps)
 
   return (
     <div className="mt-6 bg-white rounded-lg shadow-md p-6 space-y-4">

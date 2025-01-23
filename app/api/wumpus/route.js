@@ -10,7 +10,6 @@ async function fetchLeaderboardPage(problem, offset) {
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const problem = searchParams.get("problem");
-  console.log(problem);
   if (!problem) {
     return NextResponse.json(
       { error: "Problem name is required" },
@@ -36,7 +35,6 @@ export async function GET(request) {
         }
       }
     });
-    console.log(combinedData);
     return NextResponse.json(combinedData);
   } catch (error) {
     console.error(error.message);

@@ -80,7 +80,6 @@ const [solvedDistance, setSolvedDistance] = useState(() => {
           currTime = currTime.getHours() + ':' + currTime.getMinutes() + ':' + currTime.getSeconds();
           setSubmissionTime((prev) => {
             let updatedTimes = [...prev, { [itemId]: currTime }];
-            console.log(updatedTimes);
             return updatedTimes;
           });
 
