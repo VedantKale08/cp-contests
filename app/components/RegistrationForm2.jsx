@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import { setCookie } from "cookies-next";
+import { getCookie, setCookie } from "cookies-next";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { firestore } from "../../firebase/firebase.js";
 
@@ -12,6 +12,15 @@ export default function RegistrationForm() {
   const [name, setName] = useState("");
   const [hackerRankId, setHackerRankId] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    const savedHackerRankId = getCookie("hackerRankId");
+    const savedName = getCookie("name");
+
+    if (savedHackerRankId && savedName) {
+      router.push(`/wumpus-world/${savedHackerRankId}`);
+    }
+  }, [router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,6 +37,7 @@ export default function RegistrationForm() {
         );
         return;
       }
+
       await setDoc(docRef, {
         name,
         hackerRankId,
