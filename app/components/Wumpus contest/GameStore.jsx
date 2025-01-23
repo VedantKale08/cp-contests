@@ -276,7 +276,10 @@ export const useGameStore = create((set, get) => ({
       localStorage.setItem("hasSubmitted", "true")
       set({ hasSubmitted: true })
       console.log("Score and elapsed time saved in Firestore")
-      window.location.href = "/"
+      deleteCookie("hackerRankId");
+      deleteCookie("name");
+      localStorage.clear();
+      window.location.href = "/wumpus"
     } catch (error) {
       console.error("Error saving score in Firestore:", error)
     }
