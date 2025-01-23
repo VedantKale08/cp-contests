@@ -13,7 +13,7 @@ const calculateEuclideanDistance = (playerPosition, goalPosition) => {
   return Math.sqrt(dx * dx + dy * dy)
 }
 
-const encode = (data) => {
+export const encode = (data) => {
   try {
     const cleanedData = JSON.parse(JSON.stringify(data))
     return btoa(JSON.stringify(cleanedData))
@@ -23,16 +23,16 @@ const encode = (data) => {
   }
 }
 
-const decode = (encodedData) => {
+export const decode = (encodedData) => {
   try {
-    if (!encodedData) return null
-    const decodedString = atob(encodedData)
-    return JSON.parse(decodedString)
+    if (!encodedData) return null;
+    const decodedString = atob(encodedData);
+    return JSON.parse(decodedString);
   } catch (error) {
-    console.error("Decoding error:", error)
-    return null
+    console.error("Decoding error:", error);
+    return null;
   }
-}
+};
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000
 
 const checkTimeAndRedirect = (contestStartTime) => {

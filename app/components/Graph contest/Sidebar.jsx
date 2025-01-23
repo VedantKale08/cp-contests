@@ -2,51 +2,50 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { decode, encode } from "../Wumpus contest/GameStore";
-import contestJson from '../../../graph-contest.json'
+import contestJson from "../../../graph-contest.json";
 
 function Sidebar({ id, unlockNeighbors, unlockedNodes, setLoader }) {
-  const [checkedState, setCheckedState] = useState(
-    () =>
-      JSON.parse(localStorage.getItem("checkedState")) || Array(12).fill(false)
-  );
+  const [checkedState, setCheckedState] = useState(() => {
+    const checked = localStorage.getItem("checkedState");
+    return checked ? decode(checked) : Array(12).fill(false);
+  });
 
-const [submissionTime, setSubmissionTime] = useState(() => {
-  const submissions = localStorage.getItem("submissionTime");
-  return submissions ? decode(submissions) : [];
-});
+  const [submissionTime, setSubmissionTime] = useState(() => {
+    const submissions = localStorage.getItem("submissionTime");
+    return submissions ? decode(submissions) : [];
+  });
 
-const [solvedDistance, setSolvedDistance] = useState(() => {
-  const solved = localStorage.getItem("solvedDistance");
-  return solved ? decode(solved) : [];
-});
+  const [solvedDistance, setSolvedDistance] = useState(() => {
+    const solved = localStorage.getItem("solvedDistance");
+    return solved ? decode(solved) : [];
+  });
 
   useEffect(() => {
-    localStorage.setItem("checkedState", JSON.stringify(checkedState));
+    localStorage.setItem("checkedState", encode(checkedState));
   }, [checkedState]);
 
   useEffect(() => {
     localStorage.setItem("submissionTime", encode(submissionTime));
-  }, [submissionTime]);  
+  }, [submissionTime]);
 
   useEffect(() => {
     localStorage.setItem("solvedDistance", encode(solvedDistance));
-  }, [solvedDistance]);  
+  }, [solvedDistance]);
 
   const [distance, setDistance] = useState({
-    12 : 0,
-    11 : 1,
-    10 : 2,
-    9 : 2,
-    8 : 3,
-    7 : 3,
+    12: 0,
+    11: 1,
+    10: 2,
+    9: 2,
+    8: 3,
+    7: 3,
     6: 3,
-    5 : 4,
-    4 : 4,
-    3 : 4,
-    2 : 5,
-    1 : 5
+    5: 4,
+    4: 4,
+    3: 4,
+    2: 5,
+    1: 5,
   });
-  
 
   const checkSubmission = async (itemId, key) => {
     if (checkedState[key]) return;
@@ -58,7 +57,7 @@ const [solvedDistance, setSolvedDistance] = useState(() => {
 
     setLoader(true);
     let currentProblem = contestJson[itemId];
-    
+
     try {
       const response = await axios.get(
         `/api/leaderboard?challenge_name=${currentProblem.challenge_name}&contest_name=${currentProblem.contest_name}`
@@ -77,15 +76,20 @@ const [solvedDistance, setSolvedDistance] = useState(() => {
           setLoader(false);
 
           let currTime = new Date();
-          currTime = currTime.getHours() + ':' + currTime.getMinutes() + ':' + currTime.getSeconds();
+          currTime =
+            currTime.getHours() +
+            ":" +
+            currTime.getMinutes() +
+            ":" +
+            currTime.getSeconds();
           setSubmissionTime((prev) => {
             let updatedTimes = [...prev, { [itemId]: currTime }];
             return updatedTimes;
           });
 
           let d = distance[itemId];
-          setSolvedDistance((prev) => [...prev, { [itemId]: d}]);
-          
+          setSolvedDistance((prev) => [...prev, { [itemId]: d }]);
+
           toast("Great job! Problem solved successfully!", { icon: "🎉" });
         } else {
           setLoader(false);
