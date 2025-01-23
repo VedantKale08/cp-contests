@@ -1,43 +1,48 @@
-"use client";
+"use client"
 
-import { create } from "zustand";
-import {
-  INITIAL_POSITION,
-  GOAL_POSITION,
-  DEFAULT_PITS,
-  PENALTIES,
-  REWARDS,
-  GRID_SIZE,
-} from "../../../constansts";
-import { createEmptyGrid, createInitialVisitedCells } from "./gridUtils";
-import { placePits, placeWumpus, addBreezeAndStench } from "./entityPlacer";
-import { doc, setDoc } from "firebase/firestore";
-import { firestore } from "@/firebase/firebase";
+import { create } from "zustand"
+import { INITIAL_POSITION, GOAL_POSITION, DEFAULT_PITS, PENALTIES, REWARDS, GRID_SIZE } from "../../../constansts"
+import { createEmptyGrid, createInitialVisitedCells } from "./gridUtils"
+import { placePits, placeWumpus, addBreezeAndStench } from "./entityPlacer"
+import { doc, setDoc } from "firebase/firestore"
+import { firestore } from "@/firebase/firebase"
 
 const calculateEuclideanDistance = (playerPosition, goalPosition) => {
-  const dx = playerPosition.x - goalPosition.x;
-  const dy = playerPosition.y - goalPosition.y;
-  return Math.sqrt(dx * dx + dy * dy);
-};
+  const dx = playerPosition.x - goalPosition.x
+  const dy = playerPosition.y - goalPosition.y
+  return Math.sqrt(dx * dx + dy * dy)
+}
 
 const encode = (data) => {
-  return btoa(JSON.stringify(data));
-};
+  try {
+    const cleanedData = JSON.parse(JSON.stringify(data))
+    return btoa(JSON.stringify(cleanedData))
+  } catch (error) {
+    console.error("Encoding error:", error)
+    return null
+  }
+}
 
 const decode = (encodedData) => {
-  return JSON.parse(atob(encodedData));
-};
-
-const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+  try {
+    if (!encodedData) return null
+    const decodedString = atob(encodedData)
+    return JSON.parse(decodedString)
+  } catch (error) {
+    console.error("Decoding error:", error)
+    return null
+  }
+}
+const TWO_HOURS_MS = 2 * 60 * 60 * 1000
 
 const checkTimeAndRedirect = (contestStartTime) => {
-  const elapsedTime = new Date() - new Date(contestStartTime);
+  const elapsedTime = new Date() - new Date(contestStartTime)
   if (elapsedTime > TWO_HOURS_MS) {
-    window.location.href = '/';
-    return true;
+    window.location.href = "/"
+    return true
   }
-  return false;
-};
+  return false
+}
 
 export const useGameStore = create((set, get) => ({
   grid: [],
@@ -52,89 +57,91 @@ export const useGameStore = create((set, get) => ({
   totalStepsSpent: 0,
   rewardedStepsByProblem: {},
 
-  initializeStepState: () => {
-    const existingState = localStorage.getItem("stepState");
-    if (!existingState) {
-      const stepState = {
-        totalRewardedSteps: 0,
-        totalStepsSpent: 0,
-      };
-      localStorage.setItem("stepState", encode(stepState));
-      set({ remainingSteps: 0 });
-    } else {
-      const stepState = decode(existingState);
-      const remaining = Math.max(0, stepState.totalRewardedSteps - stepState.totalStepsSpent);
-      set({ remainingSteps: remaining });
+  initializeStepState: async () => {
+    const existingState = localStorage.getItem("stepState")
+    let stepState = decode(existingState) || { totalRewardedSteps: 0, totalStepsSpent: 0 }
+
+    if (!stepState || typeof stepState !== "object") {
+      stepState = { totalRewardedSteps: 0, totalStepsSpent: 0 }
     }
+
+    localStorage.setItem("stepState", encode(stepState))
+    const remaining = Math.max(0, stepState.totalRewardedSteps - stepState.totalStepsSpent)
+    set({ remainingSteps: remaining, totalStepsSpent: stepState.totalStepsSpent })
   },
 
   updateRewardedSteps: async (problemScores) => {
-    const stepState = decode(localStorage.getItem("stepState"));
-    let totalRewardedSteps = stepState.totalRewardedSteps;
-    
-    const currentRewardedSteps = get().rewardedStepsByProblem;
-    
+    let stepState = decode(localStorage.getItem("stepState")) || { totalRewardedSteps: 0, totalStepsSpent: 0 }
+
+    if (!stepState || typeof stepState !== "object") {
+      stepState = { totalRewardedSteps: 0, totalStepsSpent: 0 }
+    }
+
+    let totalRewardedSteps = stepState.totalRewardedSteps || 0
+
+    const currentRewardedSteps = get().rewardedStepsByProblem || {}
+
     const rewardedStepsByProblem = {
       ...currentRewardedSteps,
       ...problemScores.reduce((acc, score) => {
-        if (!score) return acc;
-        
-        const { problemName, userScore, maxScore, baseSteps } = score;
-        const rewardedSteps = Math.floor((userScore / maxScore) * baseSteps);
-        
-        totalRewardedSteps -= (currentRewardedSteps[problemName] || 0);
-        totalRewardedSteps += rewardedSteps;
-        
-        acc[problemName] = rewardedSteps;
-        return acc;
-      }, {})
-    };
-    
-    set({ rewardedStepsByProblem });
-  
-    stepState.totalRewardedSteps = totalRewardedSteps;
-    localStorage.setItem("stepState", encode(stepState));
-    
-    const remaining = Math.max(0, totalRewardedSteps - stepState.totalStepsSpent);
-    set({ remainingSteps: remaining });
+        if (!score) return acc
+
+        const { problemName, userScore, maxScore, baseSteps } = score
+        const rewardedSteps = Math.floor((userScore / maxScore) * baseSteps)
+
+        totalRewardedSteps -= currentRewardedSteps[problemName] || 0
+        totalRewardedSteps += rewardedSteps
+
+        acc[problemName] = rewardedSteps
+        return acc
+      }, {}),
+    }
+
+    set({ rewardedStepsByProblem })
+
+    stepState.totalRewardedSteps = totalRewardedSteps
+    localStorage.setItem("stepState", encode(stepState))
+
+    const remaining = Math.max(0, totalRewardedSteps - stepState.totalStepsSpent)
+    set({ remainingSteps: remaining, totalStepsSpent: stepState.totalStepsSpent })
   },
 
   loadState: async () => {
-    const contestStartTime = localStorage.getItem("contestStartTime");
-    if (checkTimeAndRedirect(contestStartTime)) return;
+    const contestStartTime = localStorage.getItem("contestStartTime")
+    if (checkTimeAndRedirect(contestStartTime)) return
 
-    const savedState = localStorage.getItem("wumpusWorldState");
-    const hasSubmitted = localStorage.getItem("hasSubmitted") === "true";
+    const savedState = localStorage.getItem("wumpusWorldState")
+    const hasSubmitted = localStorage.getItem("hasSubmitted") === "true"
 
     if (hasSubmitted) {
-      window.location.href = '/';
-      return;
+      window.location.href = "/"
+      return
     }
 
     if (savedState) {
-      const parsedState = decode(savedState);
-      const stepState = decode(localStorage.getItem("stepState"));
-      const remaining = Math.max(0, stepState.totalRewardedSteps - stepState.totalStepsSpent);
+      const parsedState = decode(savedState)
+      const stepState = decode(localStorage.getItem("stepState"))
+      const remaining = Math.max(0, stepState.totalRewardedSteps - stepState.totalStepsSpent)
       set({
         ...parsedState,
         isLoaded: true,
         hasSubmitted,
         remainingSteps: remaining,
-      });
+      })
     } else {
-      const initialVisitedCells = createInitialVisitedCells();
-      const newGrid = createEmptyGrid();
-      
-      placePits(newGrid, DEFAULT_PITS);
-      placeWumpus(newGrid);
-      newGrid[GOAL_POSITION.y][GOAL_POSITION.x] = ["goal"];
-      addBreezeAndStench(newGrid);
+      const initialVisitedCells = createInitialVisitedCells()
+      const newGrid = createEmptyGrid()
+
+      placePits(newGrid, DEFAULT_PITS)
+      placeWumpus(newGrid)
+      newGrid[GOAL_POSITION.y][GOAL_POSITION.x] = ["goal"]
+      addBreezeAndStench(newGrid)
 
       const stepState = decode(localStorage.getItem("stepState")) || {
         totalRewardedSteps: 0,
         totalStepsSpent: 0,
-      };
-      
+      }
+
       const initialState = {
         grid: newGrid,
         playerPosition: INITIAL_POSITION,
@@ -146,90 +153,88 @@ export const useGameStore = create((set, get) => ({
         remainingSteps: Math.max(0, stepState.totalRewardedSteps - stepState.totalStepsSpent),
         hasSubmitted: false,
         totalStepsSpent: 0,
-      };
+      }
 
-      localStorage.setItem("wumpusWorldState", encode(initialState));
-      set(initialState);
+      localStorage.setItem("wumpusWorldState", encode(initialState))
+      set(initialState)
     }
   },
 
   movePlayer: (direction) => {
-    const contestStartTime = localStorage.getItem("contestStartTime");
-    if (checkTimeAndRedirect(contestStartTime)) return;
-  
-    const hasSubmitted = localStorage.getItem("hasSubmitted") === "true";
+    const contestStartTime = localStorage.getItem("contestStartTime")
+    if (checkTimeAndRedirect(contestStartTime)) return
+
+    const hasSubmitted = localStorage.getItem("hasSubmitted") === "true"
     if (hasSubmitted) {
-      window.location.href = '/';
-      return;
+      window.location.href = "/"
+      return
     }
-  
+
     set((prev) => {
-      if (prev.gameOver) return prev;
-  
-      const newPosition = { ...prev.playerPosition };
-  
+      if (prev.gameOver) return prev
+
+      const newPosition = { ...prev.playerPosition }
+
       switch (direction) {
         case "up":
-          if (newPosition.y > 0) newPosition.y--;
-          break;
+          if (newPosition.y > 0) newPosition.y--
+          break
         case "down":
-          if (newPosition.y < GRID_SIZE - 1) newPosition.y++;
-          break;
+          if (newPosition.y < GRID_SIZE - 1) newPosition.y++
+          break
         case "left":
-          if (newPosition.x > 0) newPosition.x--;
-          break;
+          if (newPosition.x > 0) newPosition.x--
+          break
         case "right":
-          if (newPosition.x < GRID_SIZE - 1) newPosition.x++;
-          break;
+          if (newPosition.x < GRID_SIZE - 1) newPosition.x++
+          break
       }
-  
-      if (
-        newPosition.x === prev.playerPosition.x &&
-        newPosition.y === prev.playerPosition.y
-      ) {
-        return prev;
+
+      if (newPosition.x === prev.playerPosition.x && newPosition.y === prev.playerPosition.y) {
+        return prev
       }
-  
-      const isNewCell = !prev.visitedCells[newPosition.y][newPosition.x];
+
+      const isNewCell = !prev.visitedCells[newPosition.y][newPosition.x]
       if (isNewCell) {
-        const stepState = decode(localStorage.getItem("stepState"));
-        if (stepState.totalRewardedSteps - stepState.totalStepsSpent <= 0) {
-          return prev;
+        let stepState = decode(localStorage.getItem("stepState")) || { totalRewardedSteps: 0, totalStepsSpent: 0 }
+
+        if (!stepState || typeof stepState !== "object") {
+          stepState = { totalRewardedSteps: 0, totalStepsSpent: 0 }
         }
-  
-        stepState.totalStepsSpent++;
-        localStorage.setItem("stepState", encode(stepState));
-  
-        const remaining = Math.max(0, stepState.totalRewardedSteps - stepState.totalStepsSpent);
-        if (remaining < 0) return prev;
+
+        if (stepState.totalRewardedSteps - stepState.totalStepsSpent <= 0) {
+          return prev
+        }
+
+        stepState.totalStepsSpent++
+        localStorage.setItem("stepState", encode(stepState))
+
+        const remaining = Math.max(0, stepState.totalRewardedSteps - stepState.totalStepsSpent)
+        if (remaining < 0) return prev
+        set({ totalStepsSpent: stepState.totalStepsSpent })
       }
-  
-      const newVisitedCells = prev.visitedCells.map((row) => [...row]);
-      newVisitedCells[newPosition.y][newPosition.x] = true;
-  
-      const cellTypes = prev.grid[newPosition.y][newPosition.x];
-      let newScore = prev.score;
-      let newPenalties = prev.penalties;
-      let gameOver = prev.gameOver;
-  
+
+      const newVisitedCells = prev.visitedCells.map((row) => [...row])
+      newVisitedCells[newPosition.y][newPosition.x] = true
+
+      const cellTypes = prev.grid[newPosition.y][newPosition.x]
+      let newScore = prev.score
+      let newPenalties = prev.penalties
+      let gameOver = prev.gameOver
+
       if (cellTypes.includes("pit")) {
-        newPenalties += PENALTIES.PIT;
+        newPenalties += PENALTIES.PIT
       } else if (cellTypes.includes("wumpus")) {
-        newPenalties += PENALTIES.WUMPUS;
+        newPenalties += PENALTIES.WUMPUS
       } else if (cellTypes.includes("goal")) {
-        newScore += REWARDS.GOAL;
-        gameOver = true;
+        newScore += REWARDS.GOAL
+        gameOver = true
       }
-  
-      const euclideanDistance = (
-        (1 - calculateEuclideanDistance(newPosition, GOAL_POSITION) / 10) *
-        100
-      ).toFixed(2);
-      newScore = Math.max(newScore, euclideanDistance);
-      const updatedRemainingSteps = isNewCell
-        ? Math.max(0, prev.remainingSteps - 1)
-        : prev.remainingSteps;
-  
+
+      const euclideanDistance = ((1 - calculateEuclideanDistance(newPosition, GOAL_POSITION) / 10) * 100).toFixed(2)
+      newScore = Math.max(newScore, euclideanDistance)
+      const updatedRemainingSteps = isNewCell ? Math.max(0, prev.remainingSteps - 1) : prev.remainingSteps
+
       const newState = {
         ...prev,
         playerPosition: newPosition,
@@ -238,42 +243,43 @@ export const useGameStore = create((set, get) => ({
         penalties: newPenalties,
         gameOver,
         remainingSteps: updatedRemainingSteps,
-      };
-  
-      localStorage.setItem("wumpusWorldState", encode(newState));
-      return newState;
-    });
+      }
+
+      localStorage.setItem("wumpusWorldState", encode(newState))
+      return newState
+    })
   },
 
   submitScore: async () => {
-    const { score, penalties, hasSubmitted } = get();
-    if (hasSubmitted) return;
+    const { score, penalties, hasSubmitted } = get()
+    if (hasSubmitted) return
 
-    const elapsedTime = new Date() - new Date(localStorage.getItem("contestStartTime"));
+    const elapsedTime = new Date() - new Date(localStorage.getItem("contestStartTime"))
     const hackerRankId = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('hackerRankId='))
-      ?.split('=')[1];
+      .split("; ")
+      .find((row) => row.startsWith("hackerRankId="))
+      ?.split("=")[1]
 
     if (!hackerRankId) {
-      console.error("HackerRank ID not found");
-      return;
+      console.error("HackerRank ID not found")
+      return
     }
 
-    const userDocRef = doc(firestore, "users", hackerRankId);
+    const userDocRef = doc(firestore, "users", hackerRankId)
 
     try {
       await setDoc(userDocRef, {
         score: score,
         penalties: penalties,
         elapsedTime: elapsedTime,
-      });
-      localStorage.setItem("hasSubmitted", "true");
-      set({ hasSubmitted: true });
-      console.log("Score and elapsed time saved in Firestore");
-      window.location.href = "/";
+      })
+      localStorage.setItem("hasSubmitted", "true")
+      set({ hasSubmitted: true })
+      console.log("Score and elapsed time saved in Firestore")
+      window.location.href = "/"
     } catch (error) {
-      console.error("Error saving score in Firestore:", error);
+      console.error("Error saving score in Firestore:", error)
     }
   },
-}));
+}))
+

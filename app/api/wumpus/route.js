@@ -36,6 +36,7 @@ export async function GET(request) {
         }
       }
     });
+    console.log(combinedData);
     return NextResponse.json(combinedData);
   } catch (error) {
     console.error(error.message);

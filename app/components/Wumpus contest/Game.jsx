@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect } from "react";
 import { useGameStore } from "./GameStore";
 import Grid from "./Grid";
@@ -18,17 +17,26 @@ export default function Game({ problems }) {
     isLoaded,
     loadState,
     movePlayer,
-    remainingSteps,
     submitScore,
-    initializeStepState,
   } = useGameStore();
+  
+  useEffect(() => {
+    loadState();
+  }, []); 
+
+  if (!isLoaded) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        Loading...
+      </div>
+    );
+  }
 
   const getCurrentCellConditions = () => {
     if (!grid || !playerPosition) return [];
     const { x, y } = playerPosition;
     return grid[y][x] || [];
   };
-
 
   const currentCellConditions = getCurrentCellConditions();
 
@@ -46,7 +54,11 @@ export default function Game({ problems }) {
 
       <div className="flex flex-wrap justify-center gap-8 mb-8">
         <div className="bg-white p-6 rounded-lg shadow-lg">
-          <Grid grid={grid} playerPosition={playerPosition} visitedCells={visitedCells} />
+          <Grid 
+            grid={grid} 
+            playerPosition={playerPosition} 
+            visitedCells={visitedCells} 
+          />
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -57,7 +69,7 @@ export default function Game({ problems }) {
           <ScoreBoard
             score={score}
             penalties={penalties}
-            remainingSteps={useGameStore((state) => state.remainingSteps)}
+            remainingSteps={useGameStore.getState().remainingSteps}
             currentCellConditions={currentCellConditions}
           />
           {gameOver && (
