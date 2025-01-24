@@ -75,7 +75,7 @@ function Sidebar({ id, unlockNeighbors, unlockedNodes, setLoader }) {
 
           setLoader(false);
 
-          let currTime = new Date();
+          let currTime = new Date(); 
           currTime =
             currTime.getHours() +
             ":" +
