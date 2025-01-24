@@ -58,18 +58,26 @@ export const useGameStore = create((set, get) => ({
   totalStepsSpent: 0,
   rewardedStepsByProblem: {},
   maxScoreTimestamp: 0,
+  totalRewardedSteps: 0,
 
   initializeStepState: async () => {
+    console.log("inisialize");
+
     const existingState = localStorage.getItem("stepState")
     let stepState = decode(existingState) || { totalRewardedSteps: 0, totalStepsSpent: 0 }
+    console.log("above if");
 
     if (!stepState || typeof stepState !== "object") {
+    console.log("inside if");
       stepState = { totalRewardedSteps: 0, totalStepsSpent: 0 }
     }
-
+    console.log("below if");
+    
     localStorage.setItem("stepState", encode(stepState))
     const remaining = Math.max(0, stepState.totalRewardedSteps - stepState.totalStepsSpent)
     set({ remainingSteps: remaining, totalStepsSpent: stepState.totalStepsSpent })
+    console.log("end ");
+
   },
 
   updateRewardedSteps: async (problemScores) => {
@@ -113,12 +121,18 @@ export const useGameStore = create((set, get) => ({
     if (checkTimeAndRedirect(contestStartTime)) return
 
     const savedState = localStorage.getItem("wumpusWorldState")
+    const stepState = localStorage.getItem("stepState");
     const hasSubmitted = localStorage.getItem("hasSubmitted") === "true"
 
-    if (hasSubmitted) {
-      window.location.href = "/"
-      return
+    if (!stepState){
+      get().initializeStepState();
     }
+
+
+      if (hasSubmitted) {
+        window.location.href = "/";
+        return;
+      }
 
     if (savedState) {
       const parsedState = decode(savedState)
@@ -152,12 +166,15 @@ export const useGameStore = create((set, get) => ({
         penalties: 0,
         gameOver: false,
         isLoaded: true,
-        remainingSteps: Math.max(0, stepState.totalRewardedSteps - stepState.totalStepsSpent),
+        remainingSteps: Math.max(
+          0,
+          stepState.totalRewardedSteps - stepState.totalStepsSpent
+        ),
         hasSubmitted: false,
         totalStepsSpent: 0,
         maxScoreTimestamp: 0,
-
-      }
+        totalRewardedSteps: 0,
+      };
 
       localStorage.setItem("wumpusWorldState", encode(initialState))
       set(initialState)

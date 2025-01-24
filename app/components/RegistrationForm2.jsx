@@ -31,12 +31,12 @@ export default function RegistrationForm() {
       const docRef = doc(firestore, "users", hackerRankId);
       const docSnap = await getDoc(docRef);
 
-      if (docSnap.exists()) {
-        alert(
-          "This HackerRank ID is already registered. Please use a unique ID."
-        );
-        return;
-      }
+      // if (docSnap.exists()) {
+      //   alert(
+      //     "This HackerRank ID is already registered. Please use a unique ID."
+      //   );
+      //   return;
+      // }
 
       await setDoc(docRef, {
         name,
