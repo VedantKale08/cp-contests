@@ -48,6 +48,20 @@ function ProblemBoard({ problems }) {
 
   return (
     <div className="space-y-4">
+      <div className="text-center mb-4">
+        <p className="text-sm text-gray-600">
+          If you haven't signed up for the contest,{" "}
+          <a
+            href="https://www.hackerrank.com/grid-of-doom-coc-1"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline"
+          >
+            sign up here
+          </a>
+          .
+        </p>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
