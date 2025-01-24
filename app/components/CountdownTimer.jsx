@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 
 export default function CountdownTimer() {
   const targetDate = useMemo(
-    () => new Date("January 20, 2025 10:00:00").getTime(),
+    () => new Date("January 24, 2025 19:00:00").getTime(),
     []
   );
   const [timeLeft, setTimeLeft] = useState({
