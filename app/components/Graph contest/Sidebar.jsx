@@ -106,39 +106,34 @@ function Sidebar({ id, unlockNeighbors, unlockedNodes, setLoader }) {
   };
 
   return (
-    <div
-      className="w-[300px] border-l-2 p-4 px-6 sticky overflow-auto "
-      style={{ height: "calc(100vh - 72px)" }}
-    >
-      <div className="mb-4">
-        <p className="text-xl">Problems</p>
-        <p className="text-sm text-gray-500">
-          Mark the problem as solved once you complete it
-        </p>
-      </div>
-
-      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((item, key) => (
-        <div
-          key={key}
-          className="py-5 border-b flex justify-between items-center"
-        >
-          <label htmlFor={`cbtest-${key}`} className="cursor-pointer">
-            Problem {item}
-          </label>
-          <div className="checkbox-wrapper-19">
-            <input
-              type="checkbox"
-              id={`cbtest-${key}`}
-              checked={checkedState[key]}
-              onChange={() => checkSubmission(item, key)} // Pass the key for state tracking
-            />
-            <label htmlFor={`cbtest-${key}`} className="check-box" />
-          </div>
+    <div className="flex flex-col w-[300px] border-l-2 sticky top-0 h-screen overflow-hidden">
+      <div className="flex-grow overflow-y-auto p-4 px-6">
+        <div className="mb-4">
+          <p className="text-xl">Problems</p>
+          <p className="text-sm text-gray-500">Mark the problem as solved once you complete it</p>
         </div>
-      ))}
+
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((item, key) => (
+          <div key={key} className="py-5 border-b flex justify-between items-center">
+            <label htmlFor={`cbtest-${key}`} className="cursor-pointer">
+              Problem {item}
+            </label>
+            <div className="checkbox-wrapper-19">
+              <input
+                type="checkbox"
+                id={`cbtest-${key}`}
+                checked={checkedState[key]}
+                onChange={() => checkSubmission(item, key)}
+              />
+              <label htmlFor={`cbtest-${key}`} className="check-box" />
+            </div>
+          </div>
+        ))}
+      </div>
       <Toaster position="top-center" reverseOrder={false} />
     </div>
-  );
+  )
 }
+
 
 export default Sidebar;
