@@ -23,7 +23,7 @@ export default function CountdownTimer() {
         clearInterval(timer);
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       } else {
-        setTimeLeft({
+        setTimeLeft({  
           days: Math.floor(distance / (1000 * 60 * 60 * 24)),
           hours: Math.floor(
             (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
@@ -60,7 +60,7 @@ export default function CountdownTimer() {
               </div>
             ))}
           </div>
-        </div> 
+        </div>  
       </div>
     </div>
   );
