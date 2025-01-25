@@ -7,7 +7,7 @@ export async function GET(request) {
   
   try {
       const response = await fetch(
-        `https://www.hackerrank.com/rest/contests/${contest_name}/challenges/${challenge_name}/leaderboard`
+        `https://www.hackerrank.com/rest/contests/${contest_name}/challenges/${challenge_name}/leaderboard?offset=0&limit=100&include_practice=false`
       );
       const data = await response.json();
       return NextResponse.json(data);
