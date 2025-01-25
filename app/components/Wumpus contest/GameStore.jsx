@@ -6,7 +6,7 @@ import { createEmptyGrid, createInitialVisitedCells } from "./gridUtils"
 import { placePits, placeWumpus, addBreezeAndStench } from "./entityPlacer"
 import { doc, setDoc } from "firebase/firestore"
 import { firestore } from "@/firebase/firebase"
-import { deleteCookie} from "cookies-next";
+import { deleteCookie, getCookie} from "cookies-next";
 
 const calculateEuclideanDistance = (playerPosition, goalPosition) => {
   const dx = playerPosition.x - goalPosition.x
@@ -305,6 +305,7 @@ export const useGameStore = create((set, get) => ({
         penalties: penalties,
         elapsedTime: elapsedTime,
         maxScoreTimestamp:maxScoreTimestamp || null,
+        name:getCookie("name") || ""
       })
       localStorage.setItem("hasSubmitted", "true")
       set({ hasSubmitted: true })
