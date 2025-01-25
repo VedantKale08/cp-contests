@@ -1,6 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import stopOverflow from "../../lib/stopOverflow";
 
 function Loader() {
+  useEffect(() => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+    stopOverflow.stop();
+    return () => {
+      stopOverflow.start();
+    };
+  }, []);
   return (
     <div className='bg-black bg-opacity-45 absolute inset-0 flex justify-center items-center'>
         <div className='loader'></div>
