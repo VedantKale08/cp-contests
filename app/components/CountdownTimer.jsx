@@ -60,7 +60,7 @@ export default function CountdownTimer() {
               </div>
             ))}
           </div>
-        </div>
+        </div> 
       </div>
     </div>
   );
