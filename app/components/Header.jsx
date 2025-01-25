@@ -19,7 +19,7 @@ export default function Header({ isContestPage = false, setPopup = void 0 }) {
         <nav>
           {!isContestPage ? (
             <ul className="flex space-x-4">
-              <li>
+              {/* <li>
                 <Link href="/" className="hover:text-black">
                   Home
                 </Link>
@@ -33,7 +33,7 @@ export default function Header({ isContestPage = false, setPopup = void 0 }) {
                 <Link href="#contact" className="hover:text-black">
                   Contact
                 </Link>
-              </li>
+              </li> */}
             </ul>
           ) : (
             <SubmitButton setPopup={setPopup} />

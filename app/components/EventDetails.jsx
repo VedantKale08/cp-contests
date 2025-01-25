@@ -15,10 +15,9 @@ export default function EventDetails({ isWumpus }) {
           <div>
             <h3 className="text-xl font-semibold mb-2">Schedule</h3>
             <ul className="list-disc list-inside">
-              <li>Registration Opens: January 18, 2025</li>
-              <li>Contest Start: January 20, 2025, 10:00 AM</li>
-              <li>Contest End: January 20, 2025, 2:00 PM</li>
-              <li>Results Announcement: January 21, 2025</li>
+              <li>Registration Opens: January 23, 2025</li>
+              <li>Contest Start: January 25, 2025, 4:40 PM</li>
+              <li>Contest End: January 25, 2025, 7:30 PM</li>
             </ul>
           </div>
         </div>

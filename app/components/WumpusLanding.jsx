@@ -2,7 +2,7 @@ import React from "react";
 import Header from "./Header";
 import CountdownTimer from "./CountdownTimer";
 import EventDetails from "./EventDetails";
-import Prizes from "./Prizes";
+import Prizes from "./PrizesWumpus";
 import Footer from "./Footer";
 import RegistrationForm2 from "./RegistrationForm2";
 
@@ -28,7 +28,7 @@ const WumpusLanding = () => {
 
         <CountdownTimer />
         <EventDetails isWumpus />
-        <Prizes />
+        <PrizesWumpus />
 
         <section id="register" className="py-12 px-4">
           <div className="container mx-auto">

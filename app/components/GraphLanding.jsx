@@ -9,12 +9,12 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 const isRegistered = async () => {
-    const cookieStore = await cookies();
-    const hackerRankId = cookieStore.get("hackerRankId");    
-    if (hackerRankId) {
-      redirect(`/graph-contest/${hackerRankId.value}`);
-    }
-}
+  const cookieStore = await cookies();
+  const hackerRankId = cookieStore.get("hackerRankId");
+  if (hackerRankId) {
+    redirect(`/graph-contest/${hackerRankId.value}`);
+  }
+};
 
 const GraphLanding = async () => {
   await isRegistered();
@@ -24,7 +24,7 @@ const GraphLanding = async () => {
       <main className="flex-grow">
         <section className=" text-slate-800 py-24 px-4 ">
           <div className="container mx-auto text-center">
-            <h1 className="text-5xl font-bold mb-4">Graph-Based Contest</h1>
+            <h1 className="text-5xl font-bold mb-4">Travelling Coder</h1>
             <p className="text-xl mb-8">
               Challenge yourself and win amazing prizes!
             </p>

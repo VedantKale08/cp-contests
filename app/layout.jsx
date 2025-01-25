@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "CP Graph Event",
+  title: "Travelling Coder",
   description: "Made by COC",
 };
 
