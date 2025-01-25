@@ -3,7 +3,7 @@ import WumpusLanding from "../components/WumpusLanding";
 
 function page() {
   return <div>
-    {/* <WumpusLanding/> */}
+    <WumpusLanding/>
     </div>;
 }
 
