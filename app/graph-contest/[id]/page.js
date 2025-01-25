@@ -23,7 +23,7 @@ async function page({ params }) {
         x: 0,
         y: 0,
         color: "#ffcc00",
-        image: "/check.svg",
+        image: "/start.svg",
         imagePadding: 15,
         contestLink: "",
       }, // Yellow

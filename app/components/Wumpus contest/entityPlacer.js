@@ -10,7 +10,7 @@ export const placePits = (grid) => {
   ];
 
   predefinedPits.forEach(({ x, y }) => {
-    const isValidPlacement =
+  const isValidPlacement =
       !(x === INITIAL_POSITION.x && y === INITIAL_POSITION.y) &&
       !(x === GOAL_POSITION.x && y === GOAL_POSITION.y);
 
