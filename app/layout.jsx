@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Travelling Coder",
+  title: "Grid of doom",
   description: "Made by COC",
 };
 
