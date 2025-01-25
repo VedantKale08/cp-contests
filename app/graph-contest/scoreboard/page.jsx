@@ -85,7 +85,7 @@ export default function Scoreboard() {
                 <TableHead>Team Name</TableHead>
                 <TableHead>HackerRank ID</TableHead>
                 <TableHead className="text-right">Distance from goal</TableHead>
-                <TableHead className="text-right">Time Taken</TableHead>
+                <TableHead className="text-right">Submission Time</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
