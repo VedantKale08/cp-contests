@@ -6,7 +6,7 @@ export const placePits = (grid) => {
     { x: 4, y: 0 },
     { x: 7, y: 3 },
     { x: 4, y: 7 },
-    { x: 0, y: 4 },
+    { x: 4, y: 4 },
   ];
 
   predefinedPits.forEach(({ x, y }) => {
