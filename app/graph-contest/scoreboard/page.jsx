@@ -36,14 +36,21 @@ export default function Scoreboard() {
         const que = a.minDistance.question; 
         const timeA = a.submissionsTime[que];
         const timeB = b.submissionsTime[que];        
-
-        const [hA, mA, sA] = timeA.split(":").map(Number);
-        const [hB, mB, sB] = timeB.split(":").map(Number);
-
-        const totalSecondsA = hA * 3600 + mA * 60 + sA;
-        const totalSecondsB = hB * 3600 + mB * 60 + sB;
-
-        return totalSecondsA - totalSecondsB;
+        console.log(timeA);
+        console.log(timeB);
+        if(timeA && timeB){
+          const [hA, mA, sA] = timeA.split(":").map(Number);
+          const [hB, mB, sB] = timeB.split(":").map(Number);
+  
+          const totalSecondsA = hA * 3600 + mA * 60 + sA;
+          const totalSecondsB = hB * 3600 + mB * 60 + sB;
+  
+          return totalSecondsA - totalSecondsB;
+        }
+        else if(timeA){
+          return 1;
+        }
+        return 0;
       });
   
       setFinalScoreboard(playersData)
