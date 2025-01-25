@@ -45,6 +45,13 @@ const checkTimeAndRedirect = (contestStartTime) => {
   return false
 }
 
+const formatTimestampToHMS = (elapsedTime) => {
+  const hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+  const minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+  return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+};
+
 export const useGameStore = create((set, get) => ({
   grid: [],
   playerPosition: INITIAL_POSITION,
@@ -257,7 +264,7 @@ export const useGameStore = create((set, get) => ({
       let newMaxScoreTimestamp = prev.maxScoreTimestamp;
       const elapsedTime = new Date() - new Date(contestStartTime);
       if (newScore > prev.score) {
-        newMaxScoreTimestamp = elapsedTime;
+        newMaxScoreTimestamp = formatTimestampToHMS(elapsedTime);
       }
   
       const newState = {
@@ -297,7 +304,7 @@ export const useGameStore = create((set, get) => ({
         score: score,
         penalties: penalties,
         elapsedTime: elapsedTime,
-        maxScoreTimestamp: maxScoreTimestamp || null,
+        maxScoreTimestamp:maxScoreTimestamp || null,
       })
       localStorage.setItem("hasSubmitted", "true")
       set({ hasSubmitted: true })
