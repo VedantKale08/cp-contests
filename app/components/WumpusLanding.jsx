@@ -28,7 +28,6 @@ const WumpusLanding = () => {
 
         <CountdownTimer />
         <EventDetails isWumpus />
-        <PrizesWumpus />
 
         <section id="register" className="py-12 px-4">
           <div className="container mx-auto">
