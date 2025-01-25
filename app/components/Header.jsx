@@ -7,7 +7,7 @@ export default function Header({ isContestPage = false, setPopup = void 0 }) {
     <header className=" bg-[#0e1111] text-white p-4 shadow-xl px-20">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/" className="text-2xl font-bold flex items-center gap-3">
-          <Image
+          <img
             src={"/coco_logo.png"}
             alt="coc_logo"
             width={0}

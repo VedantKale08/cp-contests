@@ -1,8 +1,8 @@
 import React from 'react';
 import { Trophy, Skull, Timer, Wind, SnailIcon as Nose, LockKeyholeIcon as Hole, DogIcon as Wolf, Flag } from 'lucide-react'
+import { useGameStore } from './GameStore'
 
-export default function ScoreBoard({ score, penalties, remainingSteps, currentCellConditions }) {
-  console.log(currentCellConditions);
+export default function ScoreBoard({ score, penalties,currentCellConditions }) {
 
   const ConditionIcon = ({ condition, icon: Icon, text }) => (
     <div className={`flex items-center ${currentCellConditions.includes(condition) ? 'text-blue-600' : 'text-gray-400'}`}>
@@ -10,6 +10,7 @@ export default function ScoreBoard({ score, penalties, remainingSteps, currentCe
       <span className="ml-2">{text}</span>
     </div>
   );
+  const remainingSteps = useGameStore((state) => state.remainingSteps)
 
   return (
     <div className="mt-6 bg-white rounded-lg shadow-md p-6 space-y-4">

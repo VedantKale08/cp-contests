@@ -23,24 +23,24 @@ export default function Scoreboard() {
         id: doc.id,
         ...doc.data()
       }))
-
+  
       // Updated sorting logic
       playersData.sort((a, b) => {
         if (b.score !== a.score) {
-          return b.score - a.score
+          return b.score - a.score // Descending order of score
         }
-        if (b.penalties !== a.penalties) {
-          return a.penalties - b.penalties
+        if (a.penalties !== b.penalties) {
+          return a.penalties - b.penalties // Ascending order of penalties
         }
-        return (a.elapsedTime || 0) - (b.elapsedTime || 0)
+        return (a.maxScoreTimestamp || Infinity) - (b.maxScoreTimestamp || Infinity) // Ascending order of maxScoreTimestamp
       })
-
+  
       setFinalScoreboard(playersData)
     } catch (error) {
       console.error("Error fetching scoreboard:", error)
     }
   }
-
+  
   useEffect(() => {
     fetchFinalScoreboard()
   }, [])
@@ -95,7 +95,7 @@ export default function Scoreboard() {
                       {player.penalties}
                     </TableCell>
                     <TableCell className="text-right font-medium text-blue-600">
-                      {formatElapsedTime(player.elapsedTime || 0)}
+                      {player.maxScoreTimestamp}
                     </TableCell>
                   </TableRow>
                 ))
