@@ -68,22 +68,25 @@ export default function Game({ id, problems }) {
           />
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <Controls onMove={movePlayer} disabled={gameOver} />
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <ScoreBoard
-            score={score}
-            penalties={penalties}
-            remainingSteps={useGameStore.getState().remainingSteps}
-            currentCellConditions={currentCellConditions}
-          />
-          {gameOver && (
-            <div className="mt-4 text-center">
-              <p className="text-xl font-bold mb-2 text-red-600">Game Over!</p>
-            </div>
-          )}
+        <div className="flex flex-col gap-4">
+          <div className="bg-white p-6 rounded-lg shadow-lg h-fit">
+            <ScoreBoard
+              score={score}
+              penalties={penalties}
+              remainingSteps={useGameStore.getState().remainingSteps}
+              currentCellConditions={currentCellConditions}
+            />
+            {gameOver && (
+              <div className="mt-4 text-center">
+                <p className="text-xl font-bold mb-2 text-red-600">
+                  Game Over!
+                </p>
+              </div>
+            )}
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <Controls onMove={movePlayer} disabled={gameOver} />
+          </div>
         </div>
       </div>
 

@@ -29,7 +29,7 @@ export default function Cell({ types, isPlayer, isVisited }) {
   return (
     <div
       className={`w-12 h-12 border border-gray-300 flex items-center justify-center relative ${
-        isPlayer ? "bg-blue-200" : isVisited ? "bg-white" : "bg-gray-400"
+        isPlayer ? "bg-yellow-300" : isVisited ? "bg-white" : "bg-gray-400"
       } hover:scale-105 hover:shadow-md transition-all duration-200 ease-in-out`}
       aria-label={isVisited ? types.join(", ") : "Unknown"}
       title={isVisited ? types.join(", ") : "Unvisited"}
@@ -37,12 +37,12 @@ export default function Cell({ types, isPlayer, isVisited }) {
       <div className="flex flex-wrap justify-center items-center">
         {getCellContent()}
       </div>
-      {isPlayer && (
+      {/* {isPlayer && (
         <div
           className="absolute w-4 h-4 bg-red-500 rounded-full"
           aria-label="Player"
         />
-      )}
+      )} */}
     </div>
   );
 }
