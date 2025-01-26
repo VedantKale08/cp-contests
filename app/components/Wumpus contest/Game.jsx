@@ -22,25 +22,26 @@ export default function Game({ id, problems }) {
     submitScore,
   } = useGameStore();
 
+  const [popup, setPopup] = useState(false);
+  const remainingSteps = useGameStore((state) => state.remainingSteps); // Use hook instead of direct call
+
   useEffect(() => {
-    loadState();
-  }, []);
-
-  if (!isLoaded) {
-    return (
-      <Loader/>
-    );
-  }
-
-  const [popup,setPopup] = useState(false);
+    if (typeof loadState === "function") {
+      loadState();
+    }
+  }, [loadState]);
 
   const getCurrentCellConditions = () => {
     if (!grid || !playerPosition) return [];
     const { x, y } = playerPosition;
-    return grid[y][x] || [];
+    return grid?.[y]?.[x] || [];
   };
 
   const currentCellConditions = getCurrentCellConditions();
+
+  if (!isLoaded) {
+    return <Loader />;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-8">
@@ -75,7 +76,7 @@ export default function Game({ id, problems }) {
             <ScoreBoard
               score={score}
               penalties={penalties}
-              remainingSteps={useGameStore.getState().remainingSteps}
+              remainingSteps={remainingSteps}
               currentCellConditions={currentCellConditions}
             />
             {gameOver && (
