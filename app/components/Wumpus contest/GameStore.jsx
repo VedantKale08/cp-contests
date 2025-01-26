@@ -218,7 +218,7 @@ export const useGameStore = create((set, get) => ({
   movePlayer: (direction) => {
     const contestStartTime = localStorage.getItem("contestStartTime");
     if (checkTimeAndRedirect(contestStartTime)) return;
-
+  
     const hasSubmitted = localStorage.getItem("hasSubmitted") === "true";
     if (hasSubmitted) {
       deleteCookie("hackerRankId");
@@ -226,10 +226,10 @@ export const useGameStore = create((set, get) => ({
       window.location.href = "/";
       return;
     }
-
+  
     set((prev) => {
       if (prev.gameOver) return prev;
-
+  
       const newPosition = { ...prev.playerPosition };
       switch (direction) {
         case "up":
@@ -245,31 +245,32 @@ export const useGameStore = create((set, get) => ({
           if (newPosition.x < GRID_SIZE - 1) newPosition.x++;
           break;
       }
-
+  
       if (
         newPosition.x === prev.playerPosition.x &&
         newPosition.y === prev.playerPosition.y
       ) {
         return prev;
       }
+  
       const isNewCell = !prev.visitedCells[newPosition.y][newPosition.x];
       if (isNewCell) {
         let stepState = decode(localStorage.getItem("stepState")) || {
           totalRewardedSteps: 0,
           totalStepsSpent: 0,
         };
-
+  
         if (!stepState || typeof stepState !== "object") {
           stepState = { totalRewardedSteps: 0, totalStepsSpent: 0 };
         }
-
+  
         if (stepState.totalRewardedSteps - stepState.totalStepsSpent <= 0) {
           return prev;
         }
-
+  
         stepState.totalStepsSpent++;
         localStorage.setItem("stepState", encode(stepState));
-
+  
         const remaining = Math.max(
           0,
           stepState.totalRewardedSteps - stepState.totalStepsSpent
@@ -277,38 +278,42 @@ export const useGameStore = create((set, get) => ({
         if (remaining < 0) return prev;
         set({ totalStepsSpent: stepState.totalStepsSpent });
       }
-
+  
       const newVisitedCells = prev.visitedCells.map((row) => [...row]);
       newVisitedCells[newPosition.y][newPosition.x] = true;
-
+  
       const cellTypes = prev.grid[newPosition.y][newPosition.x];
       let newScore = prev.score;
       let newPenalties = prev.penalties;
       let gameOver = prev.gameOver;
-      if (cellTypes.includes("pit")) {
-        newPenalties += PENALTIES.PIT;
-      } else if (cellTypes.includes("wumpus")) {
-        newPenalties += PENALTIES.WUMPUS;
-      } else if (cellTypes.includes("goal")) {
+      if (isNewCell) {
+        if (cellTypes.includes("pit")) {
+          newPenalties += PENALTIES.PIT;
+        } else if (cellTypes.includes("wumpus")) {
+          newPenalties += PENALTIES.WUMPUS;
+        }
+      }
+  
+      if (cellTypes.includes("goal")) {
         newScore += REWARDS.GOAL;
         gameOver = true;
       }
-
+  
       const euclideanDistance = (
         (1 - calculateEuclideanDistance(newPosition, GOAL_POSITION) / 13) *
         100
       ).toFixed(2);
       newScore = Math.max(newScore, euclideanDistance);
-
+  
       const updatedRemainingSteps = isNewCell
         ? Math.max(0, prev.remainingSteps - 1)
         : prev.remainingSteps;
-
+  
       let newMaxScoreTimestamp = prev.maxScoreTimestamp;
       if (newScore > prev.score) {
         newMaxScoreTimestamp = formatTimestampToHMS(new Date());
       }
-
+  
       const newState = {
         ...prev,
         playerPosition: newPosition,
@@ -319,11 +324,12 @@ export const useGameStore = create((set, get) => ({
         remainingSteps: updatedRemainingSteps,
         maxScoreTimestamp: newMaxScoreTimestamp,
       };
-
+  
       localStorage.setItem("wumpusWorldState", encode(newState));
       return newState;
     });
   },
+  
   submitScore: async () => {
     const { score, penalties, maxScoreTimestamp, hasSubmitted } = get();
     if (hasSubmitted) return;
