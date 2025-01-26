@@ -2,6 +2,14 @@ import { INITIAL_POSITION, GOAL_POSITION } from '../../../constansts';
 import { isValidPosition, getAdjacentCells } from './gridUtils';
 
 export const placePits = (grid) => {
+  const predefinedPits = [
+    {x: 7, y: 8},
+    {x: 9, y: 6},
+    {x: 4, y: 3},
+  ]
+  predefinedPits.forEach(({ x, y }) => {
+    grid[y][x] = ['pit'];
+  });
   let pitsPlaced = 0;
   while (pitsPlaced < 5) {
     const x = Math.floor(Math.random() * grid[0].length);
@@ -37,6 +45,7 @@ export const placeWumpus = (grid) => {
       wumpusPlaced++;
     }
   }
+
 };
 
 export const addBreezeAndStench = (grid) => {
