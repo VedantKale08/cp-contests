@@ -67,8 +67,6 @@ export default function Scoreboard() {
         return <Trophy className="w-6 h-6 text-yellow-400" />;
       case 2:
         return <Medal className="w-6 h-6 text-gray-400" />;
-      case 3:
-        return <Award className="w-6 h-6 text-amber-600" />;
       default:
         return null;
     }
