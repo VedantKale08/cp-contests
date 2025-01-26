@@ -17,12 +17,14 @@ const page = async ({ params }) => {
   await isRegistered();
 
   const problems = [
-    { name: "estimating-fossil-ages", steps: 2, score: 100 },
+    { name: "skibidi-and-the-mirror-window", steps: 2, score: 100 },
+    { name: "estimating-fossil-ages", steps: 3, score: 150 },
+    {name: "moggers-book-hunt", steps: 3, score: 175},
     { name: "string-duel-1", steps: 3, score: 200 },
-    { name: "the-kasol-conundrum123456", steps: 4, score: 300 },
-    { name: "find-the-cocchains", steps: 5, score: 400 },
-    { name: "we-got-rtx-6090-before-gta-vi", steps: 6, score: 500 },
-    { name: "the-dance-of-eternal-gaze", steps: 7, score: 600 },
+    { name: "the-kasol-conundrum123456", steps: 6, score: 300 },
+    { name: "find-the-cocchains", steps: 7, score: 400 },
+    { name: "we-got-rtx-6090-before-gta-vi", steps: 8, score: 500 },
+    { name: "the-dance-of-eternal-gaze", steps: 9, score: 600 },
   ];
   if (typeof window !== "undefined") {
     const storedProblems = localStorage.getItem("problems");

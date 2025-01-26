@@ -45,13 +45,12 @@ const checkTimeAndRedirect = (contestStartTime) => {
   return false
 }
 
-const formatTimestampToHMS = (elapsedTime) => {
-  const hours = Math.floor(elapsedTime / (1000 * 60 * 60));
-  const minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
-  return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-};
-
+function formatTimestampToHMS(date) {
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${hours}:${minutes}:${seconds}`;
+}
 export const useGameStore = create((set, get) => ({
   grid: [],
   playerPosition: INITIAL_POSITION,
@@ -262,9 +261,8 @@ export const useGameStore = create((set, get) => ({
       const updatedRemainingSteps = isNewCell ? Math.max(0, prev.remainingSteps - 1) : prev.remainingSteps;
   
       let newMaxScoreTimestamp = prev.maxScoreTimestamp;
-      const elapsedTime = new Date() - new Date(contestStartTime);
       if (newScore > prev.score) {
-        newMaxScoreTimestamp = formatTimestampToHMS(elapsedTime);
+        newMaxScoreTimestamp = formatTimestampToHMS(new Date());
       }
   
       const newState = {
