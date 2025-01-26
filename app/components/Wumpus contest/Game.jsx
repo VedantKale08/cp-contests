@@ -1,11 +1,12 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useGameStore } from "./GameStore";
 import Grid from "./Grid";
 import Controls from "./Controls";
 import ScoreBoard from "./ScoreBoard";
 import ProblemBoard from "./ProblemBoard";
 import Loader from "../Loader";
+import ConfirmationPage from "./ConfirmationPage";
 
 export default function Game({ id, problems }) {
   const {
@@ -31,6 +32,8 @@ export default function Game({ id, problems }) {
     );
   }
 
+  const [popup,setPopup] = useState(false);
+
   const getCurrentCellConditions = () => {
     if (!grid || !playerPosition) return [];
     const { x, y } = playerPosition;
@@ -51,7 +54,7 @@ export default function Game({ id, problems }) {
           </p>
         </div>
         <button
-          onClick={submitScore}
+          onClick={() => setPopup(true)}
           className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
         >
           Submit
@@ -93,6 +96,10 @@ export default function Game({ id, problems }) {
         <h2 className="text-2xl font-bold mb-4">Problem List</h2>
         <ProblemBoard problems={problems} />
       </div>
+
+      {popup && (
+        <ConfirmationPage setPopup={setPopup} submitScore={submitScore} />
+      )}
     </div>
   );
 }
