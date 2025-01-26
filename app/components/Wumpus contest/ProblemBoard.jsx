@@ -48,8 +48,8 @@ function ProblemBoard({ problems }) {
 
   return (
     <div className="space-y-4">
-      <div className="text-center mb-4">
-        <p className="text-sm text-gray-600">
+      <div className="text-center mb-4 border py-4 bg-gray-300">
+        <p className="text-gray">
           If you haven't signed up for the contest,{" "}
           <a
             href="https://www.hackerrank.com/grid-of-doom-coc-1"
@@ -131,7 +131,7 @@ function ProblemBoard({ problems }) {
       </Table>
       <div className="flex justify-between items-center text-sm text-gray-600">
         <p>Click on "Update Score" to fetch the latest score and rewarded steps for a problem</p>
-        <Badge variant="outline">Total Problems: {problems.length}</Badge>
+        <Badge variant="outline" className="px-3 py-2 bg-white">Total Problems: {problems.length}</Badge>
       </div>
     </div>
   )
