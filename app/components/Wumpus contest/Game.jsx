@@ -5,6 +5,7 @@ import Grid from "./Grid";
 import Controls from "./Controls";
 import ScoreBoard from "./ScoreBoard";
 import ProblemBoard from "./ProblemBoard";
+import Loader from "../Loader";
 
 export default function Game({ id, problems }) {
   const {
@@ -26,9 +27,7 @@ export default function Game({ id, problems }) {
 
   if (!isLoaded) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        Loading...
-      </div>
+      <Loader/>
     );
   }
 
