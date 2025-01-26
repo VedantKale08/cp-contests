@@ -1,6 +1,7 @@
 import React from 'react';
 import { Trophy, Skull, Timer, Wind, SnailIcon as Nose, LockKeyholeIcon as Hole, DogIcon as Wolf, Flag } from 'lucide-react'
 import { useGameStore } from './GameStore'
+import { decode } from './GameStore'
 
 export default function ScoreBoard({ score, penalties,currentCellConditions }) {
 
@@ -11,7 +12,9 @@ export default function ScoreBoard({ score, penalties,currentCellConditions }) {
     </div>
   );
   const remainingSteps = useGameStore((state) => state.remainingSteps)
-
+  const wumpusWorldState = decode(localStorage.getItem("wumpusWorldState"))
+  console.log(wumpusWorldState)
+  const maxScoreTimestamp = wumpusWorldState?.maxScoreTimestamp
   return (
     <div className="mt-6 bg-white rounded-lg shadow-md p-6 space-y-4">
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">Game Status</h2>
@@ -46,6 +49,9 @@ export default function ScoreBoard({ score, penalties,currentCellConditions }) {
         {currentCellConditions.length === 0 && (
           <p className="text-gray-600 mt-2">Nothing unusual in this cell.</p>
         )}
+        <div>
+          <p className="text-gray-600">Last Max Score at : {maxScoreTimestamp}.</p>
+        </div>
       </div>
     </div>
   );

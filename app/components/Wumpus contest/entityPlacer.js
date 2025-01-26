@@ -2,27 +2,27 @@ import { INITIAL_POSITION, GOAL_POSITION } from '../../../constansts';
 import { isValidPosition, getAdjacentCells } from './gridUtils';
 
 export const placePits = (grid) => {
-  const predefinedPits = [
-    { x: 4, y: 0 },
-    { x: 7, y: 3 },
-    { x: 4, y: 7 },
-    { x: 4, y: 4 }, 
-  ];
+  let pitsPlaced = 0;
+  while (pitsPlaced < 5) {
+    const x = Math.floor(Math.random() * grid[0].length);
+    const y = Math.floor(Math.random() * grid.length);
 
-  predefinedPits.forEach(({ x, y }) => {
-  const isValidPlacement =
+    const isValidPlacement =
       !(x === INITIAL_POSITION.x && y === INITIAL_POSITION.y) &&
-      !(x === GOAL_POSITION.x && y === GOAL_POSITION.y);
+      !(x === GOAL_POSITION.x && y === GOAL_POSITION.y) &&
+      !grid[y][x].includes('pit') &&
+      !grid[y][x].includes('wumpus');
 
     if (isValidPlacement) {
       grid[y][x] = ['pit'];
+      pitsPlaced++;
     }
-  });
+  }
 };
 
 export const placeWumpus = (grid) => {
   let wumpusPlaced = 0;
-  while (wumpusPlaced < 2) {
+  while (wumpusPlaced < 3) {
     const x = Math.floor(Math.random() * grid[0].length);
     const y = Math.floor(Math.random() * grid.length);
 

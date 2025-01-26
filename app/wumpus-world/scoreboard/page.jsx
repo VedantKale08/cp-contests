@@ -111,7 +111,7 @@ export default function Scoreboard() {
                       {player.name ? player.name : "Anonymous"}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {player.id}
+                      {player.hackerRankId}
                     </TableCell>
                     <TableCell className="text-right font-medium text-green-600">
                       {player.score}

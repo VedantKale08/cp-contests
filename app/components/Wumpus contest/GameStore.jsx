@@ -256,7 +256,7 @@ export const useGameStore = create((set, get) => ({
         gameOver = true;
       }
   
-      const euclideanDistance = ((1 - calculateEuclideanDistance(newPosition, GOAL_POSITION) / 10) * 100).toFixed(2);
+      const euclideanDistance = ((1 - calculateEuclideanDistance(newPosition, GOAL_POSITION) / 13) * 100).toFixed(2);
       newScore = Math.max(newScore, euclideanDistance);
   
       const updatedRemainingSteps = isNewCell ? Math.max(0, prev.remainingSteps - 1) : prev.remainingSteps;
@@ -305,7 +305,8 @@ export const useGameStore = create((set, get) => ({
         penalties: penalties,
         elapsedTime: elapsedTime,
         maxScoreTimestamp:maxScoreTimestamp || null,
-        name:getCookie("name") || ""
+        name:getCookie("name"),
+        hackerRankId: getCookie("hackerRankId"),
       })
       localStorage.setItem("hasSubmitted", "true")
       set({ hasSubmitted: true })
