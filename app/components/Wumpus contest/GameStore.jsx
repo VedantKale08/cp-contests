@@ -70,7 +70,7 @@ export const useGameStore = create((set, get) => ({
   hasSubmitted: false,
   totalStepsSpent: 0,
   rewardedStepsByProblem: {},
-  maxScoreTimestamp: 0,
+  maxScoreTimestamp: formatTimestampToHMS(new Date()),
   totalRewardedSteps: 0,
 
   initializeStepState: async () => {
@@ -206,7 +206,7 @@ export const useGameStore = create((set, get) => ({
         ),
         hasSubmitted: false,
         totalStepsSpent: 0,
-        maxScoreTimestamp: 0,
+        maxScoreTimestamp: formatTimestampToHMS(new Date()),
         totalRewardedSteps: 0,
       };
 
