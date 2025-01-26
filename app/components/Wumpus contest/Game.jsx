@@ -6,7 +6,7 @@ import Controls from "./Controls";
 import ScoreBoard from "./ScoreBoard";
 import ProblemBoard from "./ProblemBoard";
 
-export default function Game({ problems }) {
+export default function Game({ id, problems }) {
   const {
     grid,
     playerPosition,
@@ -19,10 +19,10 @@ export default function Game({ problems }) {
     movePlayer,
     submitScore,
   } = useGameStore();
-  
+
   useEffect(() => {
     loadState();
-  }, []); 
+  }, []);
 
   if (!isLoaded) {
     return (
@@ -43,7 +43,14 @@ export default function Game({ problems }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-8">
       <div className="flex justify-between items-center w-full mb-8">
-        <h1 className="text-4xl font-bold text-center flex-grow">Wumpus World Game</h1>
+        <div className="flex flex-col items-center w-full">
+          <h1 className="text-4xl font-bold text-center flex-grow">
+            Wumpus World Game
+          </h1>
+          <p className="text-center text-lg mb-4">
+            Your HackerRank ID is: <span className="font-mono">{id}</span>
+          </p>
+        </div>
         <button
           onClick={submitScore}
           className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
@@ -54,10 +61,10 @@ export default function Game({ problems }) {
 
       <div className="flex flex-wrap justify-center gap-8 mb-8">
         <div className="bg-white p-6 rounded-lg shadow-lg">
-          <Grid 
-            grid={grid} 
-            playerPosition={playerPosition} 
-            visitedCells={visitedCells} 
+          <Grid
+            grid={grid}
+            playerPosition={playerPosition}
+            visitedCells={visitedCells}
           />
         </div>
 
