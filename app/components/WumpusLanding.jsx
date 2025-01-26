@@ -13,7 +13,7 @@ const WumpusLanding = () => {
       <main className="flex-grow">
         <section className=" text-slate-800 py-20 px-4">
           <div className="container mx-auto text-center">
-            <h1 className="text-5xl font-bold mb-4">Wumpus World Contest</h1>
+            <h1 className="text-5xl font-bold mb-4">Grid Of Doom</h1>
             <p className="text-xl mb-8">
               Challenge yourself and win amazing prizes!
             </p>

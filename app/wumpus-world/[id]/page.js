@@ -13,7 +13,7 @@ const isRegistered = async () => {
 
 const page = async ({ params }) => {
   const cookieStore = await cookies();
-  const id = cookieStore.get("hackerRankId");
+  const id = cookieStore.get("hackerRankId")?.value;
   await isRegistered();
 
   const problems = [

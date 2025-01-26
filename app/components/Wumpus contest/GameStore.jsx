@@ -314,7 +314,7 @@ export const useGameStore = create((set, get) => ({
       deleteCookie("hackerRankId");
       deleteCookie("name");
       localStorage.clear();
-      window.location.href = "/wumpus"
+      window.location.href = "/"
     } catch (error) {
       console.error("Error saving score in Firestore:", error)
     }
