@@ -38,7 +38,7 @@ export default function Game({ id, problems }) {
   };
 
   const currentCellConditions = getCurrentCellConditions();
-
+ 
   if (!isLoaded) {
     return <Loader />;
   }
