@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { useGameStore } from "./GameStore";
 import { decode } from "./GameStore";
+import { FaSkull, FaSmog } from "react-icons/fa";
+import { GiHole } from "react-icons/gi";
 
 export default function ScoreBoard({
   score,
@@ -70,7 +72,9 @@ export default function ScoreBoard({
             Last Max <br />
             Score At
           </p>
-          <p className="text-xl font-bold text-yellow-600">{maxScoreTimestamp}</p>
+          <p className="text-xl font-bold text-yellow-600">
+            {maxScoreTimestamp}
+          </p>
         </div>
       </div>
 
@@ -80,16 +84,15 @@ export default function ScoreBoard({
         </h3>
         <div className="grid grid-cols-2 gap-3">
           <ConditionIcon condition="breeze" icon={Wind} text="Breeze" />
-          <ConditionIcon condition="stench" icon={Nose} text="Stench" />
-          <ConditionIcon condition="pit" icon={Hole} text="Pit" />
-          <ConditionIcon condition="wumpus" icon={Wolf} text="Wumpus" />
+          <ConditionIcon condition="stench" icon={FaSmog} text="Stench" />
+          <ConditionIcon condition="pit" icon={GiHole} text="Pit" />
+          <ConditionIcon condition="wumpus" icon={FaSkull} text="Wumpus" />
           <ConditionIcon condition="goal" icon={Flag} text="Goal" />
         </div>
         {currentCellConditions.length === 0 && (
           <p className="text-gray-600 mt-2">Nothing unusual in this cell.</p>
         )}
-        <div>
-        </div>
+        <div></div>
       </div>
     </div>
   );
